@@ -1,0 +1,5 @@
+name: Skin2Server
+version: 1.0.0
+main: io.github.lukeeey.skin2server.Skin2ServerPlugin
+api: ["1.0.5"]
+author: lukeeey
