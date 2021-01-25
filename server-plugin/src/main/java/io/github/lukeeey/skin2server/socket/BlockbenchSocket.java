@@ -1,8 +1,10 @@
 package io.github.lukeeey.skin2server.socket;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
+import cn.nukkit.network.protocol.PlayerSkinPacket;
 import cn.nukkit.utils.SerializedImage;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -18,6 +20,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -83,11 +88,35 @@ public class BlockbenchSocket extends WebSocketServer {
 
                     if (playerOptional.isPresent()) {
                         Player player = playerOptional.get();
-                        Skin skin = player.getSkin();
-                        skin.setSkinId(UUID.randomUUID().toString());
+                        Skin oldSkin = player.getSkin();
+
+                        Skin skin = new Skin();
+                        String name = UUID.randomUUID().toString();
+                        String geometry;
+
+                        Path skinGeometryPath = plugin.getDataFolder().toPath().resolve("geometry.json");
+
+                        try {
+                            geometry = new String(Files.readAllBytes(skinGeometryPath), StandardCharsets.UTF_8);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error loading data", e);
+                        }
+
+                        skin.setGeometryData(oldSkin.getGeometryData());
+                        skin.setSkinResourcePatch(oldSkin.getSkinResourcePatch());
                         skin.setSkinData(image);
+                        skin.setSkinId(name);
+                        skin.setPremium(true);
 
                         player.setSkin(skin);
+
+                        PlayerSkinPacket packet = new PlayerSkinPacket();
+                        packet.skin = skin;
+                        packet.newSkinName = name;
+                        packet.oldSkinName = oldSkin.getSkinId();
+                        packet.uuid = player.getUniqueId();
+
+                        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
 
                         plugin.getLogger().warning("Image size: " + image.getWidth() + " h: " + image.getHeight());
                         plugin.getLogger().info("changed player skin");

@@ -35,7 +35,6 @@ function createWebSocket(address, key) {
     socket.onopen = function (e) {
         this.key = key
         alert('Connected to socket')
-        alert(this.key)
         socket.send(JSON.stringify({
             type: 'authenticate',
             key: this.key
@@ -62,7 +61,7 @@ function createWebSocket(address, key) {
     socket.onerror = function (error) {
         alert('Error: ' + error.message)
     }
-}
+}   
 
 function sendToSocket(type, data) {
     socket.send(JSON.stringify({
@@ -84,7 +83,6 @@ function showConnectDialog() {
             key: {label: 'Key', type: 'input'},
             remember: {label: 'Save details', type: 'checkbox'}
         },
-        confirmEnabled: true,
         onConfirm: function (formData) {
             createWebSocket(formData.address, formData.key)
             this.hide()
