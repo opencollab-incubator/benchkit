@@ -2,23 +2,27 @@ package io.github.lukeeey.skin2server;
 
 import cn.nukkit.plugin.PluginBase;
 import io.github.lukeeey.skin2server.command.Skin2ServerCommand;
-import io.github.lukeeey.skin2server.http.APIService;
+import io.github.lukeeey.skin2server.socket.BlockbenchSocket;
 import lombok.Getter;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+
+import java.net.InetSocketAddress;
 
 @Getter
 public class Skin2ServerPlugin extends PluginBase {
-    private APIService apiService;
+    private String key;
+    private InetSocketAddress address;
+
+    private BlockbenchSocket socketServer;
 
     @Override
     public void onEnable() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:8000")
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build();
+        saveDefaultConfig();
 
-        apiService = retrofit.create(APIService.class);
+        key = getConfig().getString("key");
+        address = new InetSocketAddress(getConfig().getString("address"), getConfig().getInt("port"));
+
+        socketServer = new BlockbenchSocket(this, address);
+        socketServer.start();
 
         getServer().getCommandMap().register("skin2server", new Skin2ServerCommand(this));
     }
