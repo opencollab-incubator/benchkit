@@ -13,6 +13,7 @@ Plugin.register('skin2server', {
         // Initialize defaults
         if (localStorage.getItem('fetch_player_list') == null) localStorage.setItem('fetch_player_list', false)
         if (localStorage.getItem('server_connection') == null) localStorage.setItem('server_connection', null)
+        if (localStorage.getItem('last_player_uuid') == null) localStorage.setItem('last_player_uuid', null)
 
         if (shouldRequestPlayerList()) updatePlayerList()
 
@@ -58,6 +59,24 @@ Plugin.register('skin2server', {
             menu.label.innerText = 'Skin2Server'
 
             MenuBar.update()
+
+            new Action({
+                id: 'apply_skin_last_player',
+                name: 'Apply skin for last player',
+                keybind: new Keybind({ key: 76, ctrl: true, shift: true }),
+                click: function (ev) {
+                    var uuid;
+                    if ((uuid = getLastPlayerUuid()) !== null) {
+                        sendToSocket('apply_skin', {
+                            entityUuid: uuid,
+                            texture: textures[0].img.src
+                        })
+                        Blockbench.showQuickMessage('Skin applied', 1.5 * 1000)
+                    } else {
+                        Blockbench.showQuickMessage('You have not previously selected a player!', 2 * 1000)
+                    }
+                }
+            })
         }
     }
 })
@@ -182,7 +201,9 @@ function showExportDialog() {
                 entityUuid: formData.entityUuid,
                 texture: textures[0].img.src
             })
+            setLastPlayerUuid(formData.entityUuid)
             alert('skin applied')
+            this.hide()
         }
     })
 
@@ -274,6 +295,14 @@ function setConnectionDetails(address, port, key) {
 
 function clearConnectionDetails() {
     localStorage.setItem('server_connection', null)
+}
+
+function getLastPlayerUuid() {
+    return localStorage.getItem('last_player_uuid')
+}
+
+function setLastPlayerUuid(uuid) {
+    localStorage.setItem('last_player_uuid', uuid)
 }
 
 function getPlayerList() {
