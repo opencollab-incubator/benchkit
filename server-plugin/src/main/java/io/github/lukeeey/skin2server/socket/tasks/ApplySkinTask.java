@@ -6,6 +6,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.protocol.PlayerSkinPacket;
 import com.google.gson.JsonObject;
 import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.skin2server.event.SkinApplyEvent;
 import org.java_websocket.WebSocket;
 
 import javax.imageio.ImageIO;
@@ -57,6 +58,8 @@ public class ApplySkinTask extends SocketTask {
                 skin.setSkinData(image);
                 skin.setSkinId(name);
                 skin.setPremium(true);
+
+                plugin.getServer().getPluginManager().callEvent(new SkinApplyEvent(player, skin));
 
                 player.setSkin(skin);
 
