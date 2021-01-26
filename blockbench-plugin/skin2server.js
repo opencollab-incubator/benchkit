@@ -12,6 +12,7 @@ Plugin.register('skin2server', {
     onload() {
         // Initialize defaults
         if (localStorage.getItem('fetch_player_list') == null) localStorage.setItem('fetch_player_list', false)
+        if (localStorage.getItem('server_connection') == null) localStorage.setItem('server_connection', null)
 
         if (shouldRequestPlayerList()) updatePlayerList()
 
@@ -21,7 +22,18 @@ Plugin.register('skin2server', {
                     id: 'connect_to_server',
                     name: 'Connect to Minecraft Server',
                     click: function (ev) {
+                        var conn;
+                        if ((conn = getConnectionDetails()) !== null) {
+                            return createWebSocket(conn.address, conn.port, conn.key)
+                        }
                         showConnectDialog()
+                    }
+                }),
+                new Action({
+                    id: 'disconnect_from_server',
+                    name: 'Disconnect from Minecraft Server',
+                    click: function (ev) {
+                        closeWebSocket()
                     }
                 }),
                 new Action({
@@ -35,7 +47,7 @@ Plugin.register('skin2server', {
                 new Action({
                     id: 'apply_skin_on_server',
                     name: 'Apply Skin on Server',
-                    keybind: new Keybind({key:65, ctrl: true, shift: true}),
+                    keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
                     click: function (ev) {
                         showExportDialog()
                     }
@@ -51,11 +63,11 @@ Plugin.register('skin2server', {
 })
 
 /** Socket related */
-function createWebSocket(address, key) {
-    socket = new WebSocket('ws://' + address + ':3000')
+function createWebSocket(address, port, key) {
+    socket = new WebSocket('ws://' + address + ':' + port)
     socket.onopen = function (e) {
         this.key = key
-        
+
         Blockbench.showStatusMessage('Connected to ' + address, 3 * 1000)
 
         socket.send(JSON.stringify({
@@ -63,7 +75,7 @@ function createWebSocket(address, key) {
             key: this.key
         }))
     }
-    
+
     socket.onmessage = function (event) {
         var data = JSON.parse(event.data)
 
@@ -77,10 +89,12 @@ function createWebSocket(address, key) {
         if (data.type === 'fetch_player_list') {
             setPlayerList(data.data.players)
 
-            Blockbench.showStatusMessage('Updated player list (' + data.data.players.length + ' players)', 3 * 1000)
+            Blockbench.showStatusMessage('Updated player list (' + data.data.players.length + ' players)', 1.5 * 1000)
         }
     }
     socket.onclose = function (event) {
+        Blockbench.showStatusMessage('Disconnected from Minecraft Server' + (event.reason != null ? ' (' + event.reason + ')' : ''), 5 * 1000)
+       
         if (event.wasClean) {
             alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
@@ -88,10 +102,14 @@ function createWebSocket(address, key) {
             // event.code is usually 1006 in this case
             alert('[close] Connection died');
         }
-    };
+    }
     socket.onerror = function (error) {
         alert('Socket error: ' + error.message)
     }
+}
+
+function closeWebSocket() {
+    socket.close()
 }
 
 function sendToSocket(type, data) {
@@ -137,17 +155,17 @@ function showConnectDialog() {
         ],
         form: {
             address: { label: 'Server address', type: 'input' },
+            port: { label: 'Server port', type: 'input' },
             key: { label: 'Key', type: 'input' },
-            remember: { label: 'Save details', type: 'checkbox' }
+            remember: { label: 'Save details (You can reset them in the Configure dialog)', type: 'checkbox' }
         },
         onConfirm: function (formData) {
-            createWebSocket(formData.address, formData.key)
+            createWebSocket(formData.address, formData.port, formData.key)
             this.hide()
 
-            // if (formData.remember) {
-            //     localStorage.setItem('server_address', formData.address)
-            //     localStorage.setItem('server_key', formData.key)
-            // }
+            if (formData.remember) {
+                setConnectionDetails(formData.address, formData.port, formData.key)
+            }
         }
     }).show()
 }
@@ -175,8 +193,8 @@ function showExportDialog() {
             options[player.uuid] = player.name + ' (' + player.uuid + ')'
         }
 
-        dialog.form =  {
-            entityUuid: { label: 'Select Player', type: 'select', options: options }
+        dialog.form = {
+            entityUuid: { label: 'Select player', type: 'select', options: options }
         }
     }
 
@@ -191,18 +209,25 @@ function showConfigureDialog() {
             '<h2>Settings</h2>',
             '<p></p>',
             '<ul>',
-                '<li style="padding: 5px 0;">',
-                    '<div class="setting_element">',
-                        '<input type="checkbox" id="setting_fetch_player_list">',
-                    '</div>',
-                    '<label for="setting_fetch_player_list" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
-                        '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Fetch Player List</div>',
-                        '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Request the player list from the server every 10 seconds</div>',
-                    '</label>',
-                '</li>',
+            '<li style="padding: 5px 0;">',
+            '<div class="setting_element">',
+            '<input type="checkbox" id="setting_fetch_player_list">',
+            '</div>',
+            '<label for="setting_fetch_player_list" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
+            '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Fetch Player List</div>',
+            '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Request the player list from the server every 10 seconds</div>',
+            '</label>',
+            '</li>',
+            '<li style="padding: 5px 0;padding-top:15px;">',
+            '<label for="reset_conn_details" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
+            '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Reset Connection Details</div>',
+            '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Reset the saved Minecraft server connection details</div>',
+            '</label>',
+            '<button id="reset_conn_details">Reset</button>',
+            '</li>',
             '</ul>'
         ],
-        onConfirm: function() {
+        onConfirm: function () {
             setRequestPlayerList($('#setting_fetch_player_list').is(':checked'))
             this.hide()
 
@@ -213,6 +238,11 @@ function showConfigureDialog() {
     }).show()
 
     $('#setting_fetch_player_list').prop('checked', shouldRequestPlayerList())
+    $('#reset_conn_details').click(function (e) {
+        clearConnectionDetails()
+        dialog.hide()
+        Blockbench.showQuickMessage('Minecraft Server connection details reset', 2 * 1000)
+    })
 }
 
 /** Getters */
@@ -224,6 +254,26 @@ function setRequestPlayerList(value) {
     if (value !== null && value !== shouldRequestPlayerList()) {
         localStorage.setItem('fetch_player_list', value)
     }
+}
+
+function getConnectionDetails() {
+    var connection = localStorage.getItem('server_connection')
+    return connection !== null ? JSON.parse(connection) : null
+}
+
+function setConnectionDetails(address, port, key) {
+    var data = {
+        address: address,
+        port: port,
+        key: key
+    }
+    if (data !== getConnectionDetails()) {
+        localStorage.setItem('server_connection', JSON.stringify(data))
+    }
+}
+
+function clearConnectionDetails() {
+    localStorage.setItem('server_connection', null)
 }
 
 function getPlayerList() {
