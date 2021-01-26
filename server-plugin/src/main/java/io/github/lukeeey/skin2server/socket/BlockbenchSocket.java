@@ -1,48 +1,45 @@
 package io.github.lukeeey.skin2server.socket;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
-import cn.nukkit.network.protocol.PlayerSkinPacket;
-import cn.nukkit.utils.SerializedImage;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.skin2server.socket.tasks.ApplyModelTask;
+import io.github.lukeeey.skin2server.socket.tasks.ApplySkinTask;
+import io.github.lukeeey.skin2server.socket.tasks.FetchPlayerListTask;
+import io.github.lukeeey.skin2server.socket.tasks.SocketTask;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
 public class BlockbenchSocket extends WebSocketServer {
-    private final List<WebSocket> authenticatedSockets = new ArrayList<>();
+    private final List<WebSocket> authenticatedSockets = new ObjectArrayList<>();
+    private final Map<String, SocketTask> tasks = new HashMap<>();
+
     private final Skin2ServerPlugin plugin;
 
     public BlockbenchSocket(Skin2ServerPlugin plugin, InetSocketAddress address) {
         super(address);
         this.plugin = plugin;
+
+        tasks.put("apply_skin", new ApplySkinTask(plugin));
+        tasks.put("apply_model", new ApplyModelTask(plugin));
+        tasks.put("fetch_player_list", new FetchPlayerListTask(plugin));
     }
 
     @Override
     public void onOpen(WebSocket socket, ClientHandshake handshake) {
-        plugin.getLogger().warning("onOpen!!");
+        plugin.getLogger().info("Socket opened");
+
         plugin.getServer().getScheduler().scheduleDelayedTask(plugin, () -> {
             if (!authenticatedSockets.contains(socket)) {
                 socket.close(1000, "Failed to authenticate in time");
             }
-        }, 20 * 5);
+        }, plugin.getAuthenticationTimeout() * 20);
     }
 
     @Override
@@ -54,14 +51,17 @@ public class BlockbenchSocket extends WebSocketServer {
     @Override
     public void onMessage(WebSocket socket, String message) {
         plugin.getLogger().warning(message);
+
         JsonObject object = new JsonParser().parse(message).getAsJsonObject();
         String type = object.get("type").getAsString();
 
         if (type.equalsIgnoreCase("authenticate")) {
             String key = object.get("key").getAsString();
+
             if (key.equalsIgnoreCase(plugin.getKey())) {
-                sendToSocket(socket, "authenticate", null);
+                plugin.sendToSocket(socket, "authenticate", null);
                 authenticatedSockets.add(socket);
+
                 plugin.getLogger().warning("Authenticated!");
             } else {
                 socket.close(1000, "Failed to authenticate");
@@ -76,67 +76,10 @@ public class BlockbenchSocket extends WebSocketServer {
 
         JsonObject data = object.get("data").getAsJsonObject();
 
-        switch (type) {
-            case "apply_skin":
-                UUID entityUuid = UUID.fromString(data.get("entityUuid").getAsString());
-                String textureImage = data.get("texture").getAsString().split(",")[1];
-                byte[] b64data = Base64.getDecoder().decode(textureImage);
-
-                try {
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(b64data));
-                    Optional<Player> playerOptional = plugin.getServer().getPlayer(entityUuid);
-
-                    if (playerOptional.isPresent()) {
-                        Player player = playerOptional.get();
-                        Skin oldSkin = player.getSkin();
-
-                        Skin skin = new Skin();
-                        String name = UUID.randomUUID().toString();
-                        String geometry;
-
-                        Path skinGeometryPath = plugin.getDataFolder().toPath().resolve("geometry.json");
-
-                        try {
-                            geometry = new String(Files.readAllBytes(skinGeometryPath), StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Error loading data", e);
-                        }
-
-                        skin.setGeometryData(oldSkin.getGeometryData());
-                        skin.setSkinResourcePatch(oldSkin.getSkinResourcePatch());
-                        skin.setSkinData(image);
-                        skin.setSkinId(name);
-                        skin.setPremium(true);
-
-                        player.setSkin(skin);
-
-                        PlayerSkinPacket packet = new PlayerSkinPacket();
-                        packet.skin = skin;
-                        packet.newSkinName = name;
-                        packet.oldSkinName = oldSkin.getSkinId();
-                        packet.uuid = player.getUniqueId();
-
-                        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), packet);
-
-                        plugin.getLogger().warning("Image size: " + image.getWidth() + " h: " + image.getHeight());
-                        plugin.getLogger().info("changed player skin");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
+        if (tasks.containsKey(type)) {
+            tasks.get(type).execute(socket, data);
+            return;
         }
-    }
-
-    private void sendToSocket(WebSocket socket, String type, JsonObject data) {
-        JsonObject object = new JsonObject();
-        object.addProperty("type", type);
-        object.addProperty("key", plugin.getKey());
-
-        if (data != null) {
-            object.addProperty("data", data.toString());
-        }
-        socket.send(object.toString());
     }
 
     @Override

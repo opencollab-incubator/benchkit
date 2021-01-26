@@ -2,9 +2,8 @@ package io.github.lukeeey.skin2server.command;
 
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.utils.TextFormat;
 import io.github.lukeeey.skin2server.Skin2ServerPlugin;
-
-import java.io.IOException;
 
 public class Skin2ServerCommand extends Command {
     private final Skin2ServerPlugin plugin;
@@ -16,6 +15,13 @@ public class Skin2ServerCommand extends Command {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("version")) {
+            sender.sendMessage(TextFormat.GRAY + "skin2server by lukeeey");
+            return true;
+        }
+        if (args[0].equalsIgnoreCase("createentity")) {
+
+        }
         return true;
     }
 }
