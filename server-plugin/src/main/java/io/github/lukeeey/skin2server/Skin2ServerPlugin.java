@@ -8,6 +8,7 @@ import io.github.lukeeey.skin2server.socket.BlockbenchSocket;
 import lombok.Getter;
 import org.java_websocket.WebSocket;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 @Getter
@@ -21,6 +22,7 @@ public class Skin2ServerPlugin extends PluginBase {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        saveResource("geometry.json");
 
         key = getConfig().getString("key");
         address = new InetSocketAddress(getConfig().getString("address"), getConfig().getInt("port"));
@@ -30,6 +32,15 @@ public class Skin2ServerPlugin extends PluginBase {
         socketServer.start();
 
         getServer().getCommandMap().register("skin2server", new Skin2ServerCommand(this));
+    }
+
+    @Override
+    public void onDisable() {
+        try {
+            socketServer.stop();
+        } catch (InterruptedException | IOException e) {
+            getLogger().warning("Failed to stop socket server: " + e.getMessage());
+        }
     }
 
     public void sendToSocket(WebSocket socket, String type, JsonObject data) {
