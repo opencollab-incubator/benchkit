@@ -33,6 +33,7 @@ Plugin.register('skin2server', {
                 new Action({
                     id: 'disconnect_from_server',
                     name: 'Disconnect from Minecraft Server',
+                    keybind: new Keybind({ key: 68, ctrl: true, shift: true }),
                     click: function (ev) {
                         closeWebSocket()
                     }
