@@ -3,8 +3,8 @@ var key;
 
 var playerList = []
 
-Plugin.register('skin2server', {
-    title: 'Skin to Server!',
+Plugin.register('benchkit', {
+    title: 'Benchkit',
     author: 'lukeeey',
     description: 'Applies your skin in game with the click of a button',
     version: '1.0.0',
@@ -18,7 +18,7 @@ Plugin.register('skin2server', {
         if (shouldRequestPlayerList()) updatePlayerList()
 
         if (Format.id === 'skin') {
-            var menu = new BarMenu('skin2server_menu', [
+            var menu = new BarMenu('benchkit_menu', [
                 new Action({
                     id: 'connect_to_server',
                     name: 'Connect to Minecraft Server',
@@ -39,7 +39,7 @@ Plugin.register('skin2server', {
                     }
                 }),
                 new Action({
-                    id: 'skin2server_configure',
+                    id: 'benchkit_configure',
                     name: 'Configure',
                     click: function (ev) {
                         showConfigureDialog()
@@ -57,7 +57,7 @@ Plugin.register('skin2server', {
 
             ], true)
 
-            menu.label.innerText = 'Skin2Server'
+            menu.label.innerText = 'Benchkit'
 
             MenuBar.update()
 
@@ -74,7 +74,7 @@ Plugin.register('skin2server', {
                         })
                         Blockbench.showQuickMessage('Skin applied', 1.5 * 1000)
                     } else {
-                        Blockbench.showQuickMessage('You have not previously selected a player!', 2 * 1000)
+                        Blockbench.showQuickMessage('You have not previously selected a player to apply a skin to!', 2 * 1000)
                     }
                 }
             })
@@ -155,7 +155,7 @@ function updatePlayerList() {
 }
 
 
-Blockbench.on('skin2server_prefs_updated', function (data) {
+Blockbench.on('benchkit_prefs_updated', function (data) {
     if (data.fetch_player_list && playerList.length === 0) {
         updatePlayerList()
     } else {
@@ -171,7 +171,7 @@ function showConnectDialog() {
         id: 'connect_to_server_dialog',
         title: 'Connect to Minecraft Server',
         lines: [
-            'Enter the address of a Minecraft server with the Skin2Server plugin installed and the key specified in the config.',
+            'Enter the address of a Minecraft server with the Benchkit plugin installed and the key specified in the config.',
         ],
         form: {
             address: { label: 'Server address', type: 'input' },
@@ -225,8 +225,8 @@ function showExportDialog() {
 
 function showConfigureDialog() {
     var dialog = new Dialog({
-        id: 'skin2server_configure_dialog',
-        title: 'Configure Skin2Server',
+        id: 'benchkit_configure_dialog',
+        title: 'Configure Benchkit',
         lines: [
             '<h2>Settings</h2>',
             '<p></p>',
@@ -253,7 +253,7 @@ function showConfigureDialog() {
             setRequestPlayerList($('#setting_fetch_player_list').is(':checked'))
             this.hide()
 
-            Blockbench.dispatchEvent('skin2server_prefs_updated', {
+            Blockbench.dispatchEvent('benchkit_prefs_updated', {
                 fetch_player_list: shouldRequestPlayerList()
             })
         },

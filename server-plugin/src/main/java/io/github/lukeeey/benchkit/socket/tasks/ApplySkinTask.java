@@ -1,12 +1,12 @@
-package io.github.lukeeey.skin2server.socket.tasks;
+package io.github.lukeeey.benchkit.socket.tasks;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.network.protocol.PlayerSkinPacket;
 import com.google.gson.JsonObject;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
-import io.github.lukeeey.skin2server.event.SkinApplyEvent;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
+import io.github.lukeeey.benchkit.event.SkinApplyEvent;
 import org.java_websocket.WebSocket;
 
 import javax.imageio.ImageIO;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class ApplySkinTask extends SocketTask {
 
-    public ApplySkinTask(Skin2ServerPlugin plugin) {
+    public ApplySkinTask(BenchkitPlugin plugin) {
         super(plugin, "apply_skin");
     }
 

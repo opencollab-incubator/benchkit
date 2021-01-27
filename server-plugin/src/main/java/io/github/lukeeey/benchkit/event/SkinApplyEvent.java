@@ -1,4 +1,4 @@
-package io.github.lukeeey.skin2server.event;
+package io.github.lukeeey.benchkit.event;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.Skin;

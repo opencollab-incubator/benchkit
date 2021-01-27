@@ -1,12 +1,12 @@
-package io.github.lukeeey.skin2server.socket.tasks;
+package io.github.lukeeey.benchkit.socket.tasks;
 
 import com.google.gson.JsonObject;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
 import org.java_websocket.WebSocket;
 
 public class ApplyModelTask extends SocketTask {
 
-    public ApplyModelTask(Skin2ServerPlugin plugin) {
+    public ApplyModelTask(BenchkitPlugin plugin) {
         super(plugin, "apply_model");
     }
 

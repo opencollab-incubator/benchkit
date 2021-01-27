@@ -1,12 +1,12 @@
-package io.github.lukeeey.skin2server.socket;
+package io.github.lukeeey.benchkit.socket;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
-import io.github.lukeeey.skin2server.socket.tasks.ApplyModelTask;
-import io.github.lukeeey.skin2server.socket.tasks.ApplySkinTask;
-import io.github.lukeeey.skin2server.socket.tasks.FetchPlayerListTask;
-import io.github.lukeeey.skin2server.socket.tasks.SocketTask;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
+import io.github.lukeeey.benchkit.socket.tasks.ApplyModelTask;
+import io.github.lukeeey.benchkit.socket.tasks.ApplySkinTask;
+import io.github.lukeeey.benchkit.socket.tasks.FetchPlayerListTask;
+import io.github.lukeeey.benchkit.socket.tasks.SocketTask;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -20,9 +20,9 @@ public class BlockbenchSocket extends WebSocketServer {
     private final List<WebSocket> authenticatedSockets = new ObjectArrayList<>();
     private final Map<String, SocketTask> tasks = new HashMap<>();
 
-    private final Skin2ServerPlugin plugin;
+    private final BenchkitPlugin plugin;
 
-    public BlockbenchSocket(Skin2ServerPlugin plugin, InetSocketAddress address) {
+    public BlockbenchSocket(BenchkitPlugin plugin, InetSocketAddress address) {
         super(address);
         this.plugin = plugin;
 

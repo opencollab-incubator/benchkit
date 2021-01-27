@@ -1,10 +1,10 @@
-package io.github.lukeeey.skin2server;
+package io.github.lukeeey.benchkit;
 
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonObject;
-import io.github.lukeeey.skin2server.command.Skin2ServerCommand;
-import io.github.lukeeey.skin2server.socket.BlockbenchSocket;
+import io.github.lukeeey.benchkit.command.BenchkitCommand;
+import io.github.lukeeey.benchkit.socket.BlockbenchSocket;
 import lombok.Getter;
 import org.java_websocket.WebSocket;
 
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 @Getter
-public class Skin2ServerPlugin extends PluginBase {
+public class BenchkitPlugin extends PluginBase {
     private String key;
     private InetSocketAddress address;
     private int authenticationTimeout;
@@ -31,7 +31,7 @@ public class Skin2ServerPlugin extends PluginBase {
         socketServer = new BlockbenchSocket(this, address);
         socketServer.start();
 
-        getServer().getCommandMap().register("skin2server", new Skin2ServerCommand(this));
+        getServer().getCommandMap().register("benchkit", new BenchkitCommand(this));
     }
 
     @Override

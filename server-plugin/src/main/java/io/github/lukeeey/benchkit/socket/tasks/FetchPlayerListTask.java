@@ -1,16 +1,16 @@
-package io.github.lukeeey.skin2server.socket.tasks;
+package io.github.lukeeey.benchkit.socket.tasks;
 
 import cn.nukkit.Player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
 import org.java_websocket.WebSocket;
 
 import java.util.Collection;
 
 public class FetchPlayerListTask extends SocketTask {
 
-    public FetchPlayerListTask(Skin2ServerPlugin plugin) {
+    public FetchPlayerListTask(BenchkitPlugin plugin) {
         super(plugin, "fetch_player_list");
     }
 

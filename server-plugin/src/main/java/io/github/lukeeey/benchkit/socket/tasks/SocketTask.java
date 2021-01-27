@@ -1,13 +1,13 @@
-package io.github.lukeeey.skin2server.socket.tasks;
+package io.github.lukeeey.benchkit.socket.tasks;
 
 import com.google.gson.JsonObject;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
 import lombok.RequiredArgsConstructor;
 import org.java_websocket.WebSocket;
 
 @RequiredArgsConstructor
 public abstract class SocketTask {
-    protected final Skin2ServerPlugin plugin;
+    protected final BenchkitPlugin plugin;
     private final String name;
 
     public abstract void execute(WebSocket socket, JsonObject data);

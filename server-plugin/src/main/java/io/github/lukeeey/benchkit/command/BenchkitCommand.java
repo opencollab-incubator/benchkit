@@ -1,4 +1,4 @@
-package io.github.lukeeey.skin2server.command;
+package io.github.lukeeey.benchkit.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
@@ -9,13 +9,13 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.TextFormat;
-import io.github.lukeeey.skin2server.Skin2ServerPlugin;
+import io.github.lukeeey.benchkit.BenchkitPlugin;
 
-public class Skin2ServerCommand extends Command {
-    private final Skin2ServerPlugin plugin;
+public class BenchkitCommand extends Command {
+    private final BenchkitPlugin plugin;
 
-    public Skin2ServerCommand(Skin2ServerPlugin plugin) {
-        super("skin2server", "Skin2Server Commands");
+    public BenchkitCommand(BenchkitPlugin plugin) {
+        super("benchkit", "benchkit Commands");
         this.plugin = plugin;
 
         this.commandParameters.put("default", new CommandParameter[] {
@@ -38,7 +38,7 @@ public class Skin2ServerCommand extends Command {
             return true;
         }
         if (args[0].equalsIgnoreCase("version")) {
-            sender.sendMessage(TextFormat.GRAY + "skin2server by lukeeey");
+            sender.sendMessage(TextFormat.GRAY + "benchkit by lukeeey");
             return true;
         }
         if (args[0].equalsIgnoreCase("spawnhumannoid")) {

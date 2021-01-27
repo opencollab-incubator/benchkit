@@ -1,4 +1,4 @@
-package io.github.lukeeey.skin2server;
+package io.github.lukeeey.benchkit;
 
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.data.Skin;
