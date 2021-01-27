@@ -13,5 +13,5 @@ This process will become simpler as the plugins become more developed.
 
 ## TODO
 * Create a [Cloudburst](https://github.com/CloudburstMC/Server) plugin
-* Add support for custom entity geometry
+* Add support for custom entity geometry  
 ...feel free to make a feature request :)
