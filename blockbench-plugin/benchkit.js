@@ -88,6 +88,14 @@ Plugin.register('benchkit', {
                 }
             }
         })
+
+        // Settings.addCategory('benchkit', {
+        //     name: 'Benchkit',
+        //     open: true
+        // })
+
+        // new Setting('fetch_player_listg', { name: 'Fetch Player List', description: 'Yeah!', category: 'benchkit', value: true })
+        // new Setting('testhh', { name: 'Test', description: 'yoooo', category: 'benchkit', value: 'Yo!', type: 'text' })
     }
 })
 
