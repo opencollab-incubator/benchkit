@@ -1,5 +1,8 @@
 package io.github.lukeeey.benchkit;
 
+import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.Listener;
+import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonObject;
@@ -12,7 +15,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 @Getter
-public class BenchkitPlugin extends PluginBase {
+public class BenchkitPlugin extends PluginBase implements Listener {
     private String key;
     private InetSocketAddress address;
     private int authenticationTimeout;
@@ -32,6 +35,12 @@ public class BenchkitPlugin extends PluginBase {
         socketServer.start();
 
         getServer().getCommandMap().register("benchkit", new BenchkitCommand(this));
+        getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        getLogger().notice("geo: " + event.getPlayer().getSkin().getGeometryData());
     }
 
     @Override

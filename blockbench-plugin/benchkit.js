@@ -17,68 +17,79 @@ Plugin.register('benchkit', {
 
         if (shouldRequestPlayerList()) updatePlayerList()
 
-        if (Format.id === 'skin') {
-            var menu = new BarMenu('benchkit_menu', [
-                new Action({
-                    id: 'connect_to_server',
-                    name: 'Connect to Minecraft Server',
-                    click: function (ev) {
-                        var conn;
-                        if ((conn = getConnectionDetails()) !== null) {
-                            return createWebSocket(conn.address, conn.port, conn.key)
-                        }
-                        showConnectDialog()
-                    }
-                }),
-                new Action({
-                    id: 'disconnect_from_server',
-                    name: 'Disconnect from Minecraft Server',
-                    keybind: new Keybind({ key: 68, ctrl: true, shift: true }),
-                    click: function (ev) {
-                        closeWebSocket()
-                    }
-                }),
-                new Action({
-                    id: 'benchkit_configure',
-                    name: 'Configure',
-                    click: function (ev) {
-                        showConfigureDialog()
-                    }
-                }),
-                '_',
-                new Action({
-                    id: 'apply_skin_on_server',
-                    name: 'Apply Skin on Server',
-                    keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
-                    click: function (ev) {
-                        showExportDialog()
-                    }
-                }),
-
-            ], true)
-
-            menu.label.innerText = 'Benchkit'
-
-            MenuBar.update()
-
+        var menu = new BarMenu('benchkit_menu', [
             new Action({
-                id: 'apply_skin_last_player',
-                name: 'Apply skin for last player',
-                keybind: new Keybind({ key: 76, ctrl: true, shift: true }),
+                id: 'connect_to_server',
+                name: 'Connect to Minecraft Server',
+                condition: Format.id === 'skin' || Format.id === 'bedrock',
                 click: function (ev) {
-                    var uuid;
-                    if ((uuid = getLastPlayerUuid()) !== null) {
-                        sendToSocket('apply_skin', {
-                            entityUuid: uuid,
-                            texture: textures[0].img.src
-                        })
-                        Blockbench.showQuickMessage('Skin applied', 1.5 * 1000)
-                    } else {
-                        Blockbench.showQuickMessage('You have not previously selected a player to apply a skin to!', 2 * 1000)
+                    var conn;
+                    if ((conn = getConnectionDetails()) !== null) {
+                        return createWebSocket(conn.address, conn.port, conn.key)
                     }
+                    showConnectDialog()
                 }
-            })
-        }
+            }),
+            new Action({
+                id: 'disconnect_from_server',
+                name: 'Disconnect from Minecraft Server',
+                condition: Format.id === 'skin' || Format.id === 'bedrock',
+                keybind: new Keybind({ key: 68, ctrl: true, shift: true }),
+                click: function (ev) {
+                    closeWebSocket()
+                }
+            }),
+            new Action({
+                id: 'benchkit_configure',
+                name: 'Configure',
+                condition: Format.id === 'skin' || Format.id === 'bedrock',
+                click: function (ev) {
+                    showConfigureDialog()
+                }
+            }),
+            '_',
+            new Action({
+                id: 'apply_skin_on_server',
+                name: 'Apply Skin on Server',
+                keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
+                condition: Format.id === 'skin',
+                click: function (ev) {
+                    showExportDialog()
+                }
+            }),
+            new Action({
+                id: 'apply_model_on_server',
+                name: 'Apply Model on Server',
+                keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
+                condition: Format.id === 'bedrock',
+                click: function (ev) {
+                    showExportModelDialog()
+                }
+            }),
+
+        ], true)
+
+        menu.label.innerText = 'Benchkit'
+
+        MenuBar.update()
+
+        new Action({
+            id: 'apply_skin_last_player',
+            name: 'Apply skin for last player',
+            keybind: new Keybind({ key: 76, ctrl: true, shift: true }),
+            click: function (ev) {
+                var uuid;
+                if ((uuid = getLastPlayerUuid()) !== null) {
+                    sendToSocket('apply_skin', {
+                        entityUuid: uuid,
+                        texture: textures[0].img.src
+                    })
+                    Blockbench.showQuickMessage('Skin applied', 1.5 * 1000)
+                } else {
+                    Blockbench.showQuickMessage('You have not previously selected a player to apply a skin to!', 2 * 1000)
+                }
+            }
+        })
     }
 })
 
@@ -114,7 +125,7 @@ function createWebSocket(address, port, key) {
     }
     socket.onclose = function (event) {
         Blockbench.showStatusMessage('Disconnected from Minecraft Server' + (event.reason != null ? ' (' + event.reason + ')' : ''), 5 * 1000)
-       
+
         if (event.wasClean) {
             alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
@@ -204,6 +215,40 @@ function showExportDialog() {
             })
             setLastPlayerUuid(formData.entityUuid)
             alert('skin applied')
+            this.hide()
+        }
+    })
+
+    if (shouldRequestPlayerList()) {
+        var options = {}
+
+        for (var player of playerList) {
+            options[player.uuid] = player.name + ' (' + player.uuid + ')'
+        }
+
+        dialog.form = {
+            entityUuid: { label: 'Select player', type: 'select', options: options }
+        }
+    }
+
+    dialog.show()
+}
+
+// TODO: Merge this with the above function
+function showExportModelDialog() {
+    var dialog = new Dialog({
+        id: 'export_model_to_server_dialog',
+        title: 'Apply Model on Server',
+        form: {
+            entityUuid: { label: 'Player UUID', type: 'input' } 
+        },
+        onConfirm: function (formData) {
+            sendToSocket('apply_model', {
+                entityUuid: formData.entityUuid,
+                model: Codecs.bedrock.compile()
+            })
+            setLastPlayerUuid(formData.entityUuid)
+            alert('model applied')
             this.hide()
         }
     })
