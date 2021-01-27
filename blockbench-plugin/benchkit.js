@@ -236,16 +236,19 @@ function showExportDialog() {
 
 // TODO: Merge this with the above function
 function showExportModelDialog() {
+    var geometry = JSON.parse(Codecs.bedrock.compile())
+    geometry['minecraft:geometry'][0]['description']['identifier'] = 'geometry.humanoid.customSlim'
+
     var dialog = new Dialog({
         id: 'export_model_to_server_dialog',
-        title: 'Apply Model on Server',
+        title: 'Apply Model on Server (this currently only works for slim skins)',
         form: {
             entityUuid: { label: 'Player UUID', type: 'input' } 
         },
         onConfirm: function (formData) {
             sendToSocket('apply_model', {
                 entityUuid: formData.entityUuid,
-                model: Codecs.bedrock.compile()
+                model: JSON.stringify(geometry)
             })
             setLastPlayerUuid(formData.entityUuid)
             alert('model applied')

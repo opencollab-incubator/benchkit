@@ -42,7 +42,7 @@ public class ApplyModelTask extends SocketTask {
             String name = UUID.randomUUID().toString();
 
             skin.setGeometryData(modelData);
-            skin.setSkinResourcePatch(oldSkin.getSkinResourcePatch());
+            skin.setGeometryName("geometry.humanoid.customSlim");//setSkinResourcePatch(oldSkin.getSkinResourcePatch());
             skin.setSkinData(oldSkin.getSkinData());
             skin.setSkinId(name);
             skin.setPremium(true);
