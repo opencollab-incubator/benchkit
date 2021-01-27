@@ -113,7 +113,7 @@ function createWebSocket(address, port, key) {
         if (data.type === 'authenticate') {
             if (data.key !== key) {
                 socket.close()
-                return Blockbench.showQuickMessage('Failed to authenticate: key did not match', 3 * 1000)
+                return Blockbench.showQuickMessage('Failed to authenticate: keys did not match', 3 * 1000)
             }
         }
 

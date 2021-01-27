@@ -1,0 +1,5 @@
+name: Benchkit
+version: 1.0.0
+main: io.github.lukeeey.benchkit.nukkit.BenchkitPlugin
+api: ["1.0.5"]
+author: lukeeey
