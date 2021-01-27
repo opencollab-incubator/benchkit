@@ -113,7 +113,7 @@ function createWebSocket(address, port, key) {
         if (data.type === 'authenticate') {
             if (data.key !== key) {
                 socket.close()
-                return alert('Failed to authenticate: keys did not match')
+                return Blockbench.showQuickMessage('Failed to authenticate: key did not match', 3 * 1000)
             }
         }
 
@@ -127,11 +127,9 @@ function createWebSocket(address, port, key) {
         Blockbench.showStatusMessage('Disconnected from Minecraft Server' + (event.reason != null ? ' (' + event.reason + ')' : ''), 5 * 1000)
 
         if (event.wasClean) {
-            alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            Blockbench.showQuickMessage('Socket connection closed: ' + event.reason, 3 * 1000)
         } else {
-            // e.g. server process killed or network down
-            // event.code is usually 1006 in this case
-            alert('[close] Connection died');
+            Blockbench.showQuickMessage('Socket connection died')
         }
     }
     socket.onerror = function (error) {
@@ -214,7 +212,7 @@ function showExportDialog() {
                 texture: textures[0].img.src
             })
             setLastPlayerUuid(formData.entityUuid)
-            alert('skin applied')
+            Blockbench.showQuickMessage('Skin applied!')
             this.hide()
         }
     })
@@ -241,7 +239,7 @@ function showExportModelDialog() {
 
     var dialog = new Dialog({
         id: 'export_model_to_server_dialog',
-        title: 'Apply Model on Server (this currently only works for slim skins)',
+        title: 'Apply Model on Server',
         form: {
             entityUuid: { label: 'Player UUID', type: 'input' } 
         },
@@ -251,7 +249,7 @@ function showExportModelDialog() {
                 model: JSON.stringify(geometry)
             })
             setLastPlayerUuid(formData.entityUuid)
-            alert('model applied')
+            Blockbench.showQuickMessage('Model applied!')
             this.hide()
         }
     })
@@ -276,8 +274,6 @@ function showConfigureDialog() {
         id: 'benchkit_configure_dialog',
         title: 'Configure Benchkit',
         lines: [
-            '<h2>Settings</h2>',
-            '<p></p>',
             '<ul>',
             '<li style="padding: 5px 0;">',
             '<div class="setting_element">',
