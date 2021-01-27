@@ -15,13 +15,11 @@ Plugin.register('benchkit', {
         if (localStorage.getItem('server_connection') == null) localStorage.setItem('server_connection', null)
         if (localStorage.getItem('last_player_uuid') == null) localStorage.setItem('last_player_uuid', null)
 
-        if (shouldRequestPlayerList()) updatePlayerList()
-
         var menu = new BarMenu('benchkit_menu', [
             new Action({
                 id: 'connect_to_server',
                 name: 'Connect to Minecraft Server',
-                condition: Format.id === 'skin' || Format.id === 'bedrock',
+                condition: () => Format.id === 'skin' || Format.id === 'bedrock',
                 click: function (ev) {
                     var conn;
                     if ((conn = getConnectionDetails()) !== null) {
@@ -33,7 +31,7 @@ Plugin.register('benchkit', {
             new Action({
                 id: 'disconnect_from_server',
                 name: 'Disconnect from Minecraft Server',
-                condition: Format.id === 'skin' || Format.id === 'bedrock',
+                condition: () => Format.id === 'skin' || Format.id === 'bedrock',
                 keybind: new Keybind({ key: 68, ctrl: true, shift: true }),
                 click: function (ev) {
                     closeWebSocket()
@@ -42,7 +40,7 @@ Plugin.register('benchkit', {
             new Action({
                 id: 'benchkit_configure',
                 name: 'Configure',
-                condition: Format.id === 'skin' || Format.id === 'bedrock',
+                condition: () => Format.id === 'skin' || Format.id === 'bedrock',
                 click: function (ev) {
                     showConfigureDialog()
                 }
@@ -52,7 +50,7 @@ Plugin.register('benchkit', {
                 id: 'apply_skin_on_server',
                 name: 'Apply Skin on Server',
                 keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
-                condition: Format.id === 'skin',
+                condition: () => Format.id === 'skin',
                 click: function (ev) {
                     showExportDialog()
                 }
@@ -61,7 +59,7 @@ Plugin.register('benchkit', {
                 id: 'apply_model_on_server',
                 name: 'Apply Model on Server',
                 keybind: new Keybind({ key: 65, ctrl: true, shift: true }),
-                condition: Format.id === 'bedrock',
+                condition: () => Format.id === 'bedrock',
                 click: function (ev) {
                     showExportModelDialog()
                 }
@@ -115,6 +113,8 @@ function createWebSocket(address, port, key) {
                 socket.close()
                 return Blockbench.showQuickMessage('Failed to authenticate: keys did not match', 3 * 1000)
             }
+
+            if (shouldRequestPlayerList()) updatePlayerList()
         }
 
         if (data.type === 'fetch_player_list') {
@@ -154,13 +154,15 @@ function sendToSocket(type, data) {
 var playerListInterval
 
 function updatePlayerList() {
-    playerListInterval = setInterval(function () {
+    var fetchPlayerList = function() {
         if (!shouldRequestPlayerList()) {
             this.playerList = []
             return clearInterval(interval)
         }
         sendToSocket('fetch_player_list', {})
-    }, 10 * 1000)
+    }
+    fetchPlayerList()
+    playerListInterval = setInterval(fetchPlayerList, 10 * 1000)
 }
 
 
@@ -181,12 +183,24 @@ function showConnectDialog() {
         title: 'Connect to Minecraft Server',
         lines: [
             'Enter the address of a Minecraft server with the Benchkit plugin installed and the key specified in the config.',
+            `<hr>`
+            // '<ul>',
+            // '<li style="padding: 5px 0;">',
+            // '<label for="server_address" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
+            // '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Server Address</div>',
+            // '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">The address of the server to connect to</div>',
+            // '</label>',
+            // '<div class="setting_element">',
+            // '<input type="text" class="dark_bordered" id="server_address">',
+            // '</div>',
+            // '</li>',
+            // '</ul>'
         ],
         form: {
             address: { label: 'Server address', type: 'input' },
             port: { label: 'Server port', type: 'input' },
             key: { label: 'Key', type: 'input' },
-            remember: { label: 'Save details (You can reset them in the Configure dialog)', type: 'checkbox' }
+            remember: { label: 'Save details', type: 'checkbox' }
         },
         onConfirm: function (formData) {
             createWebSocket(formData.address, formData.port, formData.key)
@@ -275,6 +289,7 @@ function showConfigureDialog() {
         title: 'Configure Benchkit',
         lines: [
             '<ul>',
+            '<h2>Settings</h2>',
             '<li style="padding: 5px 0;">',
             '<div class="setting_element">',
             '<input type="checkbox" id="setting_fetch_player_list">',
@@ -284,12 +299,22 @@ function showConfigureDialog() {
             '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Request the player list from the server every 10 seconds</div>',
             '</label>',
             '</li>',
+            '<br>',
+            '<hr/>',
+            '<h2>Reset</h2>',
             '<li style="padding: 5px 0;padding-top:15px;">',
             '<label for="reset_conn_details" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
             '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Reset Connection Details</div>',
             '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Reset the saved Minecraft server connection details</div>',
             '</label>',
             '<button id="reset_conn_details">Reset</button>',
+            '</li>',
+            '<li style="padding: 5px 0;padding-top:15px;">',
+            '<label for="reset_last_player_details" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
+            '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Reset Last Player Details</div>',
+            '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Reset the saved last selected player details</div>',
+            '</label>',
+            '<button id="reset_last_player_details">Reset</button>',
             '</li>',
             '</ul>'
         ],
@@ -308,6 +333,11 @@ function showConfigureDialog() {
         clearConnectionDetails()
         dialog.hide()
         Blockbench.showQuickMessage('Minecraft Server connection details reset', 2 * 1000)
+    })
+    $('#reset_last_player_details').click(function (e) {
+        clearLastPlayerUuid()
+        dialog.hide()
+        Blockbench.showQuickMessage('Last player details reset', 2 * 1000)
     })
 }
 
@@ -348,6 +378,10 @@ function getLastPlayerUuid() {
 
 function setLastPlayerUuid(uuid) {
     localStorage.setItem('last_player_uuid', uuid)
+}
+
+function clearLastPlayerUuid() {
+    localStorage.setItem('last_player_uuid', null)
 }
 
 function getPlayerList() {
