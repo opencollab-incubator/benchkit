@@ -14,7 +14,9 @@ This process will become simpler as the plugins become more developed.
 5. Once connected, go about editng your skin and then click `Apply Skin on Server` in the `Benchkit` menu (next time you want to apply the skin to the same player just hit `CTRL+SHIFT+L`)
 6. Done! Your skin will change in game instantly
 
-## TODO
-* Create a [Cloudburst](https://github.com/CloudburstMC/Server) plugin
-* Add support for custom entity geometry  
-...feel free to make a feature request :)
+## Planned Features
+* "Groups" support
+  * Will be able to sort players into groups either by selecting multiple UUIDs or based on custom criteria (**maybe**)
+* Apply a skin or model and have the option to apply the other one at the same time
+  * **Example:** You go to apply a skin and in the dialog it gives you an option to choose from one of your previously saved models
+  * This feature is just intended to save time
