@@ -10,6 +10,7 @@ import org.cloudburstmc.server.event.server.ServerInitializationEvent;
 import org.cloudburstmc.server.event.server.ServerShutdownEvent;
 import org.cloudburstmc.server.plugin.Plugin;
 import org.cloudburstmc.server.plugin.PluginContainer;
+import org.cloudburstmc.server.plugin.PluginDescription;
 import org.cloudburstmc.server.utils.TextFormat;
 import com.google.gson.JsonObject;
 import io.github.lukeeey.benchkit.cloudburst.command.BenchkitCommand;
@@ -27,9 +28,19 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 @Getter
-@Plugin(id = "benchkit", name = "Benchkit", version = "1.0.0")
+@Plugin(
+        id = "benchkit",
+        name = "Benchkit",
+        version = "1.0.0",
+        authors = {"lukeeey"})
 public class BenchkitPlugin {
     public static final YAMLMapper YAML_MAPPER = new YAMLMapper();
+    private final Server server;
+    private final Logger logger;
+    private final PluginDescription description;
+    private final Path dataFolder;
+
+    private PluginContainer container;
 
     private String key;
     private InetSocketAddress address;
@@ -37,37 +48,37 @@ public class BenchkitPlugin {
 
     private BlockbenchSocket socketServer;
 
-    private Logger logger;
-    private PluginContainer container;
-    private Path dataFolder;
-
     private BenchkitConfiguration config;
 
     @Inject
-    public BenchkitPlugin(Logger logger, PluginContainer container) {
+    public BenchkitPlugin(Server server, Logger logger, PluginDescription description, Path dataDirectory) {
+        this.server = server;
         this.logger = logger;
-        this.container = container;
-        this.dataFolder = container.getDataDirectory();
+        this.description = description;
+        this.dataFolder = dataDirectory;
     }
 
     @Listener
     public void onInitialization(ServerInitializationEvent event) {
+        this.container = server.getPluginManager().fromInstance(this).orElseThrow(() ->
+                new RuntimeException("Failed to get plugin container instance"));
+
         loadConfig();
 
-        key = getConfig().getKey();
-        address = new InetSocketAddress(getConfig().getAddress(), getConfig().getPort());
-        authenticationTimeout = getConfig().getAuthenticationTimeout();
+        this.key = getConfig().getKey();
+        this.address = new InetSocketAddress(getConfig().getAddress(), getConfig().getPort());
+        this.authenticationTimeout = getConfig().getAuthenticationTimeout();
 
-        socketServer = new BlockbenchSocket(this, address);
-        socketServer.start();
+        this.socketServer = new BlockbenchSocket(this, address);
+        this.socketServer.start();
 
-        getServer().getCommandRegistry().register(container, new BenchkitCommand(this));
-        getServer().getEventManager().registerListeners(this, this);
+        server.getCommandRegistry().register(container, new BenchkitCommand(this));
+        server.getEventManager().registerListeners(this, this);
     }
 
     @Listener
     public void onJoin(PlayerJoinEvent event) {
-        getLogger().info("geo: " + event.getPlayer().getSkin().getGeometryData());
+        logger.info("geo: " + event.getPlayer().getSkin().getGeometryData());
     }
 
     @Listener
@@ -75,7 +86,7 @@ public class BenchkitPlugin {
         try {
             socketServer.stop();
         } catch (InterruptedException | IOException e) {
-            getLogger().warn("Failed to stop socket server: " + e.getMessage());
+            logger.warn("Failed to stop socket server: " + e.getMessage());
         }
     }
 
@@ -89,7 +100,7 @@ public class BenchkitPlugin {
         }
         socket.send(object.toString());
 
-        getLogger().info(TextFormat.AQUA + object.toString());
+        logger.info(TextFormat.AQUA + object.toString());
     }
 
     public Server getServer() {
@@ -116,7 +127,7 @@ public class BenchkitPlugin {
                 }
                 copyDefaultConfig(stream, path, name);
             } catch (IOException e) {
-                getLogger().warn("Unable to read default configuration: " + name);
+                logger.warn("Unable to read default configuration: " + name);
             }
         }
     }

@@ -1,5 +1,0 @@
-name: Benchkit
-version: 1.0.0
-main: io.github.lukeeey.benchkit.cloudburst.BenchkitPlugin
-api: 2.0
-author: lukeeey
