@@ -34,7 +34,7 @@ public class BenchkitPlugin extends PluginBase implements Listener {
         socketServer = new BlockbenchSocket(this, address);
         socketServer.start();
 
-        getServer().getCommandMap().register("io/github/lukeeey/benchkit/cloudburst", new BenchkitCommand(this));
+        getServer().getCommandMap().register("benchkit", new BenchkitCommand(this));
         getServer().getPluginManager().registerEvents(this, this);
     }
 

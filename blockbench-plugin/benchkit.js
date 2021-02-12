@@ -256,8 +256,8 @@ function showExportDialog() {
 
 // TODO: Merge this with the above function
 function showExportModelDialog() {
-    var geometry = JSON.parse(Codecs.bedrock.compile())
-    geometry['minecraft:geometry'][0]['description']['identifier'] = 'geometry.humanoid.customSlim'
+    // var geometry = JSON.parse(Codecs.bedrock.compile())
+    // geometry['minecraft:geometry'][0]['description']['identifier'] = 'geometry.humanoid.customSlim'
 
     var dialog = new Dialog({
         id: 'export_model_to_server_dialog',
@@ -268,7 +268,8 @@ function showExportModelDialog() {
         onConfirm: function (formData) {
             sendToSocket('apply_model', {
                 entityUuid: formData.entityUuid,
-                model: JSON.stringify(geometry)
+                identifier: Project.geometry_name,
+                model: Codecs.bedrock.compile()
             })
             setLastPlayerUuid(formData.entityUuid)
             Blockbench.showQuickMessage('Model applied!')

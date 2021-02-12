@@ -9,6 +9,10 @@ import io.github.lukeeey.benchkit.nukkit.BenchkitPlugin;
 import io.github.lukeeey.benchkit.nukkit.event.ModelApplyEvent;
 import org.java_websocket.WebSocket;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,9 +25,17 @@ public class ApplyModelTask extends SocketTask {
     @Override
     public void execute(WebSocket socket, JsonObject data) {
         UUID entityUuid = UUID.fromString(data.get("entityUuid").getAsString());
+        String identifier = data.get("identifier").getAsString();
         String modelData = data.get("model").getAsString();
 
         Optional<Player> playerOptional = plugin.getServer().getPlayer(entityUuid);
+        BufferedImage image;
+        try {
+            image = ImageIO.read(new File(plugin.getDataFolder(), "skin.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
@@ -33,12 +45,10 @@ public class ApplyModelTask extends SocketTask {
             String name = UUID.randomUUID().toString();
 
             skin.setGeometryData(modelData);
-            skin.setGeometryName("geometry.humanoid.customSlim");//setSkinResourcePatch(oldSkin.getSkinResourcePatch());
-            skin.setSkinData(oldSkin.getSkinData());
+            skin.setGeometryName("geometry." + identifier);
+            skin.setSkinData(image);
             skin.setSkinId(name);
             skin.setPremium(true);
-
-            plugin.getLogger().warning(oldSkin.getSkinResourcePatch());
 
             plugin.getServer().getPluginManager().callEvent(new ModelApplyEvent(player, skin));
 

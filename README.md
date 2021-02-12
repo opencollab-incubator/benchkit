@@ -1,8 +1,7 @@
 # Benchkit
-<!-- [![HitCount](http://hits.dwyl.com/lukeeey/benchkit.svg)](http://hits.dwyl.com/lukeeey/benchkit)  -->
 A Blockbench plugin and a Minecraft server plugin to facilitate with testing Minecraft: Bedrock Edition skins.
 
-![Benchkit](https://github.com/lukeeey/benchkit/workflows/Benchkit/badge.svg)
+![Benchkit](https://github.com/opencollab-incubator/benchkit/workflows/Benchkit/badge.svg)
 [![Discord](https://img.shields.io/discord/803794932820082739.svg?color=%237289da&label=Discord)](https://discord.gg/wS7ZpJcMtZ)
 
 ## Usage
