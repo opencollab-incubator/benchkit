@@ -23,11 +23,11 @@ class Config {
         }
     }
 
-    public get serverConnection(): ServerConnection | null {
+    get serverConnection(): ServerConnection | null {
         return this.config.lastServerConnection || null;
     }
 
-    public set serverConnection(data: ServerConnection | null) {
+    set serverConnection(data: ServerConnection | null) {
         this.config.lastServerConnection = data;
         this.update();
         

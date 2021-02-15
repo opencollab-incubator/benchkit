@@ -4,6 +4,8 @@ import config from "./config";
 import globals from "./globals";
 import socket from "./socket";
 
+import configureScreen from "../screens/configure.html";
+
 (function() {
     // Workaround for the Plugin class conflicting with the dom types
     // @ts-ignore
@@ -247,37 +249,7 @@ function showConfigureDialog() {
     var dialog = new Dialog({
         id: 'benchkit_configure_dialog',
         title: 'Configure Benchkit',
-        lines: [`
-<ul>
-    <h2>Settings</h2>
-    <li style="padding: 5px 0;padding-top : 15px;">
-        <div class="setting_element" style="float: left;text-align:center;width:50px;margin-top:12px;">
-            <input type="checkbox" id="setting_fetch_player_list">
-        </div>
-        <label for="setting_fetch_player_list" style="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">
-            <div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Fetch Player List</div>
-            <div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Request the player list from the server every 10 seconds</div>
-        </label>
-    </li>
-    <br>
-    <br>
-    <h2>Reset</h2>
-    <li style="padding: 5px 0;padding-top:15px;">
-        <label for="reset_conn_details" tyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">
-            <div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Reset Connection Details</div>
-            <div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Reset the saved Minecraft server connection details</div>
-        </label>
-        <button id="reset_conn_details">Reset</button>
-    </li>
-    <li style="padding: 5px 0;padding-top:15px;">
-        <label for="reset_last_player_details" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">
-            <div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Reset Last Player Details</div>
-            <div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">Reset the saved last selected player details</div>
-        </label>
-        <button id="reset_last_player_details">Reset</button>
-    </li>
-</ul>
-        `],
+        lines: [configureScreen],
         onConfirm: function () {
             config.fetchPlayerList = $('#setting_fetch_player_list').is(':checked');
             dialog.hide()

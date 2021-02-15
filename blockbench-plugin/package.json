@@ -1,5 +1,5 @@
 {
-  "name": "new-typescript-plugin",
+  "name": "benchkit",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
@@ -21,6 +21,7 @@
     "husky": "^5.0.9",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
+    "raw-loader": "^4.0.2",
     "ts-loader": "^8.0.17",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.5",
