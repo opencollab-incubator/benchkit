@@ -5,7 +5,15 @@ class Config {
         this.config = {
             lastServerConnection: null,
             lastPlayerUuid: null,
-            fetchPlayerList: true
+            fetchPlayerList: true,
+            strategies: {
+                github: {
+                    accessToken: null
+                }
+                // TODO: git
+                // TODO: google drive
+                // TODO: local
+            }
         }
         this.load();
     }
@@ -23,11 +31,11 @@ class Config {
         }
     }
 
-    get serverConnection(): ServerConnection | null {
+    get serverConnection(): ServerConnectionSchema | null {
         return this.config.lastServerConnection || null;
     }
 
-    set serverConnection(data: ServerConnection | null) {
+    set serverConnection(data: ServerConnectionSchema | null) {
         this.config.lastServerConnection = data;
         this.update();
         
@@ -53,15 +61,24 @@ class Config {
 }
 
 interface ConfigSchema {
-    lastServerConnection: ServerConnection | null,
+    lastServerConnection: ServerConnectionSchema | null,
     lastPlayerUuid: string | null,
-    fetchPlayerList: boolean
+    fetchPlayerList: boolean,
+    strategies: StrategySchema
 }
 
-interface ServerConnection {
+interface ServerConnectionSchema {
     address: string,
     port: number,
     key: string
+}
+
+interface StrategySchema {
+    github: GithubStrategySchema
+}
+
+interface GithubStrategySchema {
+    accessToken: string | null
 }
 
 export default new Config;

@@ -124,29 +124,17 @@ Blockbench.on("benchkit_prefs_updated", (data: any) => {
  * 
  */
 function showConnectDialog() {
+    // @ts-ignore: TODO
     var dialog = new Dialog({
         id: 'connect_to_server_dialog',
         title: 'Connect to Minecraft Server',
         lines: [
             'Enter the address of a Minecraft server with the Benchkit plugin installed and the key specified in the config.',
             `<hr>`
-            // '<ul>',
-            // '<li style="padding: 5px 0;">',
-            // '<label for="server_address" atyle="display: inline-block;margin-left: 8px;width: calc(100% - 60px);">',
-            // '<div class="setting_name" style="color: var(--color-light);height: 24px;font-size: 1.1em;">Server Address</div>',
-            // '<div class="setting_description" style="font-size: 0.9em;color: var(--color-text);">The address of the server to connect to</div>',
-            // '</label>',
-            // '<div class="setting_element">',
-            // '<input type="text" class="dark_bordered" id="server_address">',
-            // '</div>',
-            // '</li>',
-            // '</ul>'
         ],
         form: {
-            // @ts-ignore
-            address: { label: 'Server address', type: 'input' },
-            // @ts-ignore
-            port: { label: 'Server port', type: 'input' },
+            address: { label: 'Server address', type: 'text' },
+            port: { label: 'Server port', type: 'text' },
             key: { label: 'Key', type: 'text' },
             remember: { label: 'Save details', type: 'checkbox' }
         },
@@ -166,14 +154,15 @@ function showConnectDialog() {
 }
 
 function showExportDialog() {
+    // @ts-ignore
     var dialog = new Dialog({
         id: 'export_to_server_dialog',
         title: 'Apply Skin on Server',
         form: {
-            // @ts-ignore
-            entityUuid: { label: 'Player UUID', type: 'input' } // TODO: Store last used player id in local storage and auto fill,
+            entityUuid: { label: 'Player UUID', type: 'text' } // TODO: Store last used player id in local storage and auto fill,
         },
         onConfirm: function (formData: any) {
+            dialog.hide()
             socket.send('apply_skin', {
                 entityUuid: formData.entityUuid,
                 // @ts-ignore
@@ -181,7 +170,6 @@ function showExportDialog() {
             })
             config.lastPlayerUuid = formData.entityUuid;
             Blockbench.showQuickMessage('Skin applied!')
-            dialog.hide()
         }
     })
 
@@ -203,15 +191,13 @@ function showExportDialog() {
 
 // TODO: Merge this with the above function
 function showExportModelDialog() {
-    // var geometry = JSON.parse(Codecs.bedrock.compile())
-    // geometry['minecraft:geometry'][0]['description']['identifier'] = 'geometry.humanoid.customSlim'
-
+    // @ts-ignore
     var dialog = new Dialog({
         id: 'export_model_to_server_dialog',
         title: 'Apply Model on Server',
         form: {
             // @ts-ignore
-            entityUuid: { label: 'Player UUID', type: 'input' } 
+            entityUuid: { label: 'Player UUID', type: 'text' } 
         },
         onConfirm: function (formData) {
             socket.send('apply_model', {
@@ -254,7 +240,6 @@ function showConfigureDialog() {
             config.fetchPlayerList = $('#setting_fetch_player_list').is(':checked');
             dialog.hide()
 
-            // @ts-ignore
             Blockbench.dispatchEvent('benchkit_prefs_updated', {
                 fetch_player_list: config.fetchPlayerList
             })
@@ -262,12 +247,12 @@ function showConfigureDialog() {
     }).show()
 
     $('#setting_fetch_player_list').prop('checked', config.fetchPlayerList)
-    $('#reset_conn_details').click(function (e) {
+    $('#reset_conn_details').on('click', (event) => {
         config.serverConnection = null;
         dialog.hide()
         Blockbench.showQuickMessage('Minecraft Server connection details reset', 2 * 1000)
     })
-    $('#reset_last_player_details').click(function (e) {
+    $('#reset_last_player_details').on('click', (event) => {
         config.lastPlayerUuid = null;
         dialog.hide()
         Blockbench.showQuickMessage('Last player details reset', 2 * 1000)
