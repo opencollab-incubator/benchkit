@@ -1,5 +1,6 @@
 package io.github.lukeeey.benchkit.cloudburst.command;
 
+import io.github.lukeeey.benchkit.cloudburst.CloudBenchkitPlugin;
 import org.cloudburstmc.server.command.data.CommandData;
 import org.cloudburstmc.server.player.Player;
 import org.cloudburstmc.server.command.Command;
@@ -7,12 +8,11 @@ import org.cloudburstmc.server.command.CommandSender;
 import org.cloudburstmc.server.command.data.CommandParameter;
 import org.cloudburstmc.server.entity.Entity;
 import org.cloudburstmc.server.utils.TextFormat;
-import io.github.lukeeey.benchkit.cloudburst.BenchkitPlugin;
 
 public class BenchkitCommand extends Command {
-    private final BenchkitPlugin plugin;
+    private final CloudBenchkitPlugin plugin;
 
-    public BenchkitCommand(BenchkitPlugin plugin) {
+    public BenchkitCommand(CloudBenchkitPlugin plugin) {
         super(CommandData.builder("benchkit")
                 .addParameters(new CommandParameter[] {
                         new CommandParameter("version"),

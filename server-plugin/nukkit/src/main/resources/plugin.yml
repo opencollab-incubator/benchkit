@@ -1,5 +1,6 @@
 name: Benchkit
-version: 1.0.0
-main: io.github.lukeeey.benchkit.nukkit.BenchkitPlugin
+version: ${project.version}
+main: io.github.lukeeey.benchkit.nukkit.NukkitBenchkitPlugin
 api: ["1.0.5"]
 author: lukeeey
+website: https://github.com/opencollab-incubator/benchkit

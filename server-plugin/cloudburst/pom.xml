@@ -5,7 +5,7 @@
     <parent>
         <artifactId>benchkit</artifactId>
         <groupId>io.github.lukeeey</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +13,11 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.lukeeey</groupId>
+            <artifactId>benchkit-core</artifactId>
+            <version>1.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.cloudburstmc</groupId>
             <artifactId>cloudburst-server</artifactId>

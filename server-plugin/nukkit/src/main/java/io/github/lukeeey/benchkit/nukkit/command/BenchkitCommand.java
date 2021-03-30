@@ -9,12 +9,12 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.TextFormat;
-import io.github.lukeeey.benchkit.nukkit.BenchkitPlugin;
+import io.github.lukeeey.benchkit.nukkit.NukkitBenchkitPlugin;
 
 public class BenchkitCommand extends Command {
-    private final BenchkitPlugin plugin;
+    private final NukkitBenchkitPlugin plugin;
 
-    public BenchkitCommand(BenchkitPlugin plugin) {
+    public BenchkitCommand(NukkitBenchkitPlugin plugin) {
         super("benchkit", "Benchkit Commands");
         this.plugin = plugin;
 
