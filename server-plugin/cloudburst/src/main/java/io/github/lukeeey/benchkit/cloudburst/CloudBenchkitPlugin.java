@@ -2,14 +2,20 @@ package io.github.lukeeey.benchkit.cloudburst;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.inject.Inject;
+import com.nukkitx.protocol.bedrock.data.skin.ImageData;
+import com.nukkitx.protocol.bedrock.data.skin.SerializedSkin;
+import com.nukkitx.protocol.bedrock.packet.PlayerSkinPacket;
 import io.github.lukeeey.benchkit.BenchkitPlatform;
 import io.github.lukeeey.benchkit.BenchkitPlugin;
 import io.github.lukeeey.benchkit.cloudburst.command.BenchkitCommand;
+import io.github.lukeeey.benchkit.cloudburst.event.ModelApplyEvent;
+import io.github.lukeeey.benchkit.cloudburst.event.SkinApplyEvent;
 import lombok.Getter;
 import org.cloudburstmc.server.Server;
 import org.cloudburstmc.server.event.Listener;
 import org.cloudburstmc.server.event.server.ServerInitializationEvent;
 import org.cloudburstmc.server.event.server.ServerShutdownEvent;
+import org.cloudburstmc.server.player.Player;
 import org.cloudburstmc.server.plugin.Plugin;
 import org.cloudburstmc.server.plugin.PluginContainer;
 import org.cloudburstmc.server.plugin.PluginDescription;
@@ -25,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Getter
@@ -93,12 +100,68 @@ public class CloudBenchkitPlugin implements BenchkitPlugin {
 
     @Override
     public void applySkin(UUID playerUuid, BufferedImage image) {
-        // TODO
+        Optional<Player> playerOptional = server.getPlayer(playerUuid);
+        if (!playerOptional.isPresent()) {
+            // TODO: Throw exception
+            return;
+        }
+
+        Player player = playerOptional.get();
+        SerializedSkin oldSkin = player.getSkin();
+        String name = UUID.randomUUID().toString();
+
+        SerializedSkin skin = SerializedSkin.builder()
+                .geometryData(oldSkin.getGeometryData())
+                .skinResourcePatch(oldSkin.getSkinResourcePatch())
+                .skinData(ImageData.from(image))
+                .skinId(name)
+                .premium(true)
+                .build();
+
+        server.getEventManager().fire(new SkinApplyEvent(player, skin));
+
+        player.setSkin(skin);
+
+        PlayerSkinPacket packet = new PlayerSkinPacket();
+        packet.setSkin(skin);
+        packet.setNewSkinName(name);
+        packet.setOldSkinName(oldSkin.getSkinId());
+        packet.setUuid(player.getServerId());
+
+        Server.broadcastPacket(getServer().getOnlinePlayers().values(), packet);
     }
 
     @Override
     public void applySkinWithModel(UUID playerUuid, String identifier, String geometryData, BufferedImage image) {
-        // TODO
+        Optional<Player> playerOptional = server.getPlayer(playerUuid);
+        if (!playerOptional.isPresent()) {
+            // TODO: Throw exception
+            return;
+        }
+
+        Player player = playerOptional.get();
+        SerializedSkin oldSkin = player.getSkin();
+        String name = UUID.randomUUID().toString();
+
+        SerializedSkin skin = SerializedSkin.builder()
+                .geometryData(geometryData)
+                .geometryName("geometry." + identifier)
+                .skinData(ImageData.from(image))
+                .skinId(name)
+                .premium(true)
+                .build();
+
+        server.getEventManager().fire(new ModelApplyEvent(player, skin));
+
+        player.setSkin(skin);
+
+        PlayerSkinPacket packet = new PlayerSkinPacket();
+        packet.setSkin(skin);
+        packet.setNewSkinName(name);
+        packet.setOldSkinName(oldSkin.getSkinId());
+        packet.setUuid(player.getServerId());
+
+        Server.broadcastPacket(getServer().getOnlinePlayers().values(), packet);
     }
 
     @Override
