@@ -13,7 +13,7 @@ class BenchkitSocket {
             throw Error("Tried to connect to socket before terminating existing connection");
         }
         this.socket = new WebSocket(`ws://${address}:${port}`);
-        
+
         this.socket.onopen = (event) => {
             this.key = key;
             this.address = address;
@@ -69,9 +69,9 @@ class BenchkitSocket {
         Blockbench.showStatusMessage("Disconnected from Minecraft Server" + (event.reason != null ? " (" + event.reason + ")" : ""), 5 * 1000)
 
         if (event.wasClean) {
-            Blockbench.showQuickMessage('Socket connection closed: ' + event.reason, 3 * 1000)
+            Blockbench.showQuickMessage("Socket connection closed: " + event.reason, 3 * 1000)
         } else {
-            Blockbench.showQuickMessage('Socket connection died')
+            Blockbench.showQuickMessage("Socket connection died")
         }
 
         this.address = undefined;

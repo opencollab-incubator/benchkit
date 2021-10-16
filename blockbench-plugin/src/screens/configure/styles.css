@@ -1,0 +1,22 @@
+.configure--list-item {
+    padding: 5px 0;
+    padding-top: 15px;
+}
+
+.configure--list-item .setting_name {
+    color: var(--color-light);
+    height: 24px;
+    font-size: 1.1em;
+}
+
+.configure--list-item .setting_description {
+    font-size: 0.9em;
+    color: var(--color-text);
+}
+
+.configure--checkbox_wrapper {
+    float: left;
+    text-align: center;
+    width: 50px;
+    margin-top: 12px;
+}

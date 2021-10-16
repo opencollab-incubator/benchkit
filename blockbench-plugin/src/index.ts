@@ -1,12 +1,13 @@
-/// <reference types="blockbench-types" />
-
 import config from "./config";
 import globals from "./globals";
 import socket from "./socket";
 
-import configureScreen from "../screens/configure.html";
+import { loadStyles } from "./screens/style-registry";
+import { createConfigureDialog } from "./screens/configure/dialog";
+import { createConnectDialog } from "./screens/connect/dialog";
+import { createExportDialog, createExportModelDialog } from "./screens/export/dialog";
 
-(function() {
+(function () {
     // Workaround for the Plugin class conflicting with the dom types
     // @ts-ignore
     Plugin.register("benchkit", {
@@ -16,6 +17,9 @@ import configureScreen from "../screens/configure.html";
         version: "1.0.0",
         variant: "both",
         onload() {
+            // Load CSS styles
+            loadStyles();
+
             initMenuItems();
             initKeybinds();
 
@@ -36,7 +40,7 @@ function initMenuItems() {
                 if ((conn = config.serverConnection) !== null) {
                     return socket.connect(conn.address, conn.port, conn.key);
                 }
-                showConnectDialog();
+                createConnectDialog();
             }
         }),
         new Action("disconnectFromServer", {
@@ -52,7 +56,7 @@ function initMenuItems() {
             icon: "",
             condition: isSkinOrModel,
             click: (event) => {
-                showConfigureDialog();
+                createConfigureDialog();
             }
         }),
         "",
@@ -62,7 +66,7 @@ function initMenuItems() {
             icon: "",
             condition: () => Format.id === "skin",
             click: (event) => {
-                showExportDialog();
+                createExportDialog();
             }
         }),
         new Action("applyModelOnServer", {
@@ -70,7 +74,7 @@ function initMenuItems() {
             icon: "",
             condition: () => Format.id === "bedrock",
             click: (event) => {
-                showExportModelDialog();
+                createExportModelDialog();
             }
         })
     ], true)
@@ -84,9 +88,12 @@ function initMenuItems() {
 }
 
 function initKeybinds() {
-    
+
 }
 
+/**
+ * @returns true if the project is a skin or bedrock model project
+ */
 function isSkinOrModel() {
     return Format.id === "skin" || Format.id === "bedrock";
 }
@@ -94,12 +101,12 @@ function isSkinOrModel() {
 let playerListInterval: number;
 
 export function updatePlayerList() {
-    let fetchPlayerList = function() {
+    let fetchPlayerList = function () {
         if (!config.fetchPlayerList) {
             globals.playerList = [];
             return window.clearInterval(playerListInterval);
         }
-        socket.send('fetch_player_list', {});
+        socket.send("fetch_player_list", {});
     }
     fetchPlayerList()
     playerListInterval = window.setInterval(fetchPlayerList, 10 * 1000);
@@ -113,148 +120,4 @@ Blockbench.on("benchkit_prefs_updated", (data: any) => {
         globals.playerList = []
         window.clearInterval(playerListInterval)
     }
-})
-
-
-/**
- * 
- * 
- * This needs to be cleaned up ASAP.
- * 
- * 
- */
-function showConnectDialog() {
-    // @ts-ignore: TODO
-    var dialog = new Dialog({
-        id: 'connect_to_server_dialog',
-        title: 'Connect to Minecraft Server',
-        lines: [
-            'Enter the address of a Minecraft server with the Benchkit plugin installed and the key specified in the config.',
-            `<hr>`
-        ],
-        form: {
-            address: { label: 'Server address', type: 'text' },
-            port: { label: 'Server port', type: 'text' },
-            key: { label: 'Key', type: 'text' },
-            remember: { label: 'Save details', type: 'checkbox' }
-        },
-        onConfirm: function (formData: any) {
-            dialog.hide();
-            socket.connect(formData.address, formData.port, formData.key);
-
-            if (formData.remember) {
-                config.serverConnection = {
-                    address: formData.address,
-                    port: formData.port,
-                    key: formData.key
-                }
-            }
-        }
-    }).show();
-}
-
-function showExportDialog() {
-    // @ts-ignore
-    var dialog = new Dialog({
-        id: 'export_to_server_dialog',
-        title: 'Apply Skin on Server',
-        form: {
-            entityUuid: { label: 'Player UUID', type: 'text' } // TODO: Store last used player id in local storage and auto fill,
-        },
-        onConfirm: function (formData: any) {
-            dialog.hide()
-            socket.send('apply_skin', {
-                entityUuid: formData.entityUuid,
-                // @ts-ignore
-                texture: textures[0].img.src
-            })
-            config.lastPlayerUuid = formData.entityUuid;
-            Blockbench.showQuickMessage('Skin applied!')
-        }
-    })
-
-    if (config.fetchPlayerList) {
-        var options = {}
-
-        for (var player of globals.playerList) {
-            options[player.uuid] = player.name + ' (' + player.uuid + ')'
-        }
-
-        // @ts-ignore
-        dialog.form = {
-            entityUuid: { label: 'Select player', type: 'select', options: options }
-        }
-    }
-
-    dialog.show()
-}
-
-// TODO: Merge this with the above function
-function showExportModelDialog() {
-    // @ts-ignore
-    var dialog = new Dialog({
-        id: 'export_model_to_server_dialog',
-        title: 'Apply Model on Server',
-        form: {
-            // @ts-ignore
-            entityUuid: { label: 'Player UUID', type: 'text' } 
-        },
-        onConfirm: function (formData) {
-            socket.send('apply_model', {
-                // @ts-ignore
-                entityUuid: formData.entityUuid,
-                // @ts-ignore
-                identifier: Project.geometry_name,
-                model: Codecs.bedrock.compile()
-            })
-            // @ts-ignore
-            config.lastPlayerUuid = formData.entityUuid;
-            Blockbench.showQuickMessage('Model applied!')
-            dialog.hide()
-        }
-    })
-
-    if (config.fetchPlayerList) {
-        var options = {}
-
-        for (var player of globals.playerList) {
-            options[player.uuid] = player.name + ' (' + player.uuid + ')'
-        }
-
-        // @ts-ignore
-        dialog.form = {
-            entityUuid: { label: 'Select player', type: 'select', options: options }
-        }
-    }
-
-    dialog.show()
-}
-
-function showConfigureDialog() {
-    // @ts-ignore
-    var dialog = new Dialog({
-        id: 'benchkit_configure_dialog',
-        title: 'Configure Benchkit',
-        lines: [configureScreen],
-        onConfirm: function () {
-            config.fetchPlayerList = $('#setting_fetch_player_list').is(':checked');
-            dialog.hide()
-
-            Blockbench.dispatchEvent('benchkit_prefs_updated', {
-                fetch_player_list: config.fetchPlayerList
-            })
-        },
-    }).show()
-
-    $('#setting_fetch_player_list').prop('checked', config.fetchPlayerList)
-    $('#reset_conn_details').on('click', (event) => {
-        config.serverConnection = null;
-        dialog.hide()
-        Blockbench.showQuickMessage('Minecraft Server connection details reset', 2 * 1000)
-    })
-    $('#reset_last_player_details').on('click', (event) => {
-        config.lastPlayerUuid = null;
-        dialog.hide()
-        Blockbench.showQuickMessage('Last player details reset', 2 * 1000)
-    })
-}
+});
