@@ -17,8 +17,17 @@ export function createConnectDialog() {
             remember: { label: "Save details", type: "checkbox" }
         },
         onConfirm: (formData: any) => {
+            if (!formData.address || !formData.port) {
+                return Blockbench.showQuickMessage("Please enter server address and port", 3000);
+            }
+
             dialog.hide();
-            socket.connect(formData.address, formData.port, formData.key);
+
+            try {
+                socket.connect(formData.address, formData.port, formData.key);
+            } catch (e) {
+                return Blockbench.showQuickMessage(`Failed to connect to socket: ${e.message}`, 5000);
+            }
 
             if (formData.remember) {
                 config.serverConnection = {

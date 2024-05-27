@@ -23,8 +23,12 @@
 
     <repositories>
         <repository>
-            <id>opencollab-repo</id>
-            <url>https://repo.opencollab.dev/snapshot/</url>
+            <id>opencollab-repo-release</id>
+            <url>https://repo.opencollab.dev/maven-releases</url>    
+        </repository>
+        <repository>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots</url>
         </repository>
     </repositories>
 
@@ -35,14 +39,14 @@
             <version>1.5.1</version>
         </dependency>
         <dependency>
-            <groupId>com.nukkitx.fastutil</groupId>
-            <artifactId>fastutil-int-sets</artifactId>
-            <version>8.5.2</version>
-        </dependency>
+            <groupId>org.cloudburstmc.fastutil.sets</groupId>
+            <artifactId>int-sets</artifactId>
+            <version>8.5.13-SNAPSHOT</version>
+          </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.28</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

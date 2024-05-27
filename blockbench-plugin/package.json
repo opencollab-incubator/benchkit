@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.ts",
     "scripts": {
-        "build": "webpack"
+        "build": "webpack",
+        "buildfix": "NODE_OPTIONS=--openssl-legacy-provider webpack"
     },
     "keywords": [],
     "author": "Luke",
@@ -15,7 +16,7 @@
     "devDependencies": {
         "@types/node": "^12.20.0",
         "@types/webpack": "^5.28.0",
-        "blockbench-types": "^3.9.0",
+        "blockbench-types": "^4.10.0",
         "raw-loader": "^4.0.2",
         "ts-loader": "^8.0.17",
         "ts-node": "^9.1.1",

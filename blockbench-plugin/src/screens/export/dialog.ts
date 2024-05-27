@@ -11,17 +11,17 @@ export function createExportDialog() {
             entityUuid: { label: "Player UUID", type: "text" } // TODO: Store last used player id in local storage and auto fill,
         },
         onConfirm: (formData: any) => {
-            dialog.hide()
             socket.send("apply_skin", {
                 entityUuid: formData.entityUuid,
                 // @ts-ignore
-                texture: textures[0].img.src
-            })
+                texture: Project.textures[0].img.src
+            });
             config.lastPlayerUuid = formData.entityUuid;
-            Blockbench.showQuickMessage("Skin applied!")
+            Blockbench.showQuickMessage("Skin applied!", 3000);
+            dialog.hide();
         }
-    })
-
+    });
+    
     if (config.fetchPlayerList) {
         var options = {}
 
@@ -34,8 +34,8 @@ export function createExportDialog() {
             entityUuid: { label: "Select player", type: "select", options: options }
         }
     }
-
-    dialog.show()
+    
+    dialog.show();
 }
 
 // TODO: Merge this with the above function

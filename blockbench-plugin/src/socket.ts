@@ -9,31 +9,36 @@ class BenchkitSocket {
     private key?: string;
 
     connect(address: string, port: number, key: string) {
-        if (this.socket !== undefined) {
-            throw Error("Tried to connect to socket before terminating existing connection");
-        }
-        this.socket = new WebSocket(`ws://${address}:${port}`);
+        try {
+            if (this.socket != undefined) {
+                throw Error("Tried to connect to socket before terminating existing connection");
+            }
+            this.socket = new WebSocket(`ws://${address}:${port}`);
 
-        this.socket.onopen = (event) => {
-            this.key = key;
-            this.address = address;
-            this.port = port;
-            this.onOpen(event);
+            this.socket.onopen = (event) => {
+                this.key = key;
+                this.address = address;
+                this.port = port;
+                this.onOpen(event);
+            }
+            this.socket.onmessage = this.onMessage.bind(this);
+            this.socket.onclose = this.onClose.bind(this);
+            this.socket.onerror = this.onError.bind(this);
+        } catch (e) {
+            this.socket = undefined;
+            throw e;
         }
-        this.socket.onmessage = this.onMessage;
-        this.socket.onclose = this.onClose;
-        this.socket.onerror = this.onError;
     }
 
     close(reason: string) {
-        if (this.socket === undefined) {
+        if (this.socket == undefined) {
             throw new Error("Tried to close uninitialized socket");
         }
         this.socket.close(1000, reason);
     }
 
     send(type: string, data?: object) {
-        if (this.socket === undefined) {
+        if (this.socket == undefined) {
             throw new Error("Tried to send data to socket before initializing");
         }
         this.socket.send(JSON.stringify({
@@ -41,6 +46,10 @@ class BenchkitSocket {
             key: this.key,
             data: data
         }))
+    }
+
+    isConnected() {
+        return this.socket?.readyState === WebSocket.OPEN;
     }
 
     private onOpen(event: any) {
@@ -66,7 +75,7 @@ class BenchkitSocket {
     }
 
     private onClose(event: any) {
-        Blockbench.showStatusMessage("Disconnected from Minecraft Server" + (event.reason != null ? " (" + event.reason + ")" : ""), 5 * 1000)
+        Blockbench.showStatusMessage("Disconnected from Server" + (event.reason != null ? " (" + event.reason + ")" : ""), 5 * 1000)
 
         if (event.wasClean) {
             Blockbench.showQuickMessage("Socket connection closed: " + event.reason, 3 * 1000)
@@ -77,6 +86,7 @@ class BenchkitSocket {
         this.address = undefined;
         this.port = undefined;
         this.key = undefined;
+        this.socket = undefined;
     }
 
     private onError(error: any) {

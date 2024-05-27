@@ -13,7 +13,7 @@ import { createExportDialog, createExportModelDialog } from "./screens/export/di
     Plugin.register("benchkit", {
         title: "Benchkit",
         author: "lukeeey",
-        description: "",
+        description: "A Blockbench plugin used in conjunction with a server plugin to assist with testing skins and models",
         version: "1.0.0",
         variant: "both",
         onload() {
@@ -22,19 +22,19 @@ import { createExportDialog, createExportModelDialog } from "./screens/export/di
 
             initMenuItems();
             initKeybinds();
-
-            // In the future (soon) I want to seperate dialogs into their own
-            // classes to reduce the bloat in this file.
         }
     })
 })();
 
 function initMenuItems() {
+    const isConnectedToServer = () => socket.isConnected();
+    const isSkinOrModel = () => Format.id === "skin" || Format.id === "bedrock";
+
     let menu = new BarMenu("benchkitMenu", [
         new Action("connectToServer", {
             name: "Connect to Minecraft Server",
             icon: "",
-            condition: isSkinOrModel,
+            condition: () => isSkinOrModel() && !isConnectedToServer(),
             click: (event) => {
                 let conn;
                 if ((conn = config.serverConnection) !== null) {
@@ -46,7 +46,7 @@ function initMenuItems() {
         new Action("disconnectFromServer", {
             name: "Disconnect from Minecraft Server",
             icon: "",
-            condition: isSkinOrModel,
+            condition: () => isSkinOrModel() && isConnectedToServer(),
             click: (event) => {
                 socket.close("Disconnected via blockbench");
             }
@@ -64,7 +64,7 @@ function initMenuItems() {
         new Action("applySkinOnServer", {
             name: "Apply Skin on Server",
             icon: "",
-            condition: () => Format.id === "skin",
+            condition: () => Format.id === "skin" && isConnectedToServer(),
             click: (event) => {
                 createExportDialog();
             }
@@ -72,12 +72,12 @@ function initMenuItems() {
         new Action("applyModelOnServer", {
             name: "Apply Model on Server",
             icon: "",
-            condition: () => Format.id === "bedrock",
+            condition: () => Format.id === "bedrock" && isConnectedToServer(),
             click: (event) => {
                 createExportModelDialog();
             }
         })
-    ], true)
+    ], isSkinOrModel);
 
     // Workaround for setting menu title
     // @ts-ignore
@@ -89,13 +89,6 @@ function initMenuItems() {
 
 function initKeybinds() {
 
-}
-
-/**
- * @returns true if the project is a skin or bedrock model project
- */
-function isSkinOrModel() {
-    return Format.id === "skin" || Format.id === "bedrock";
 }
 
 let playerListInterval: number;

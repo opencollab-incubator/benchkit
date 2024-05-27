@@ -25,6 +25,7 @@ public class BlockbenchSocket extends WebSocketServer {
 
     public void sendToSocket(WebSocket socket, String type, JsonObject data) {
         JsonObject object = new JsonObject();
+        
         object.addProperty("type", type);
         object.addProperty("key", plugin.getAuthenticationKey());
 

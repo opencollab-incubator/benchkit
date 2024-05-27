@@ -66,6 +66,7 @@ public class NukkitBenchkitPlugin extends PluginBase implements BenchkitPlugin {
 
         String name = UUID.randomUUID().toString();
 
+        // TODO: This only works witn classic skins at the moment
         skin.setGeometryData(oldSkin.getGeometryData());
         skin.setSkinResourcePatch(oldSkin.getSkinResourcePatch());
         skin.setSkinData(image);

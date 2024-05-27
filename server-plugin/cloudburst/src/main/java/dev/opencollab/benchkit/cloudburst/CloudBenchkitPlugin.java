@@ -164,7 +164,7 @@ public class CloudBenchkitPlugin implements BenchkitPlugin {
 
     @Override
     public void scheduleDelayedTask(Runnable task, int delay) {
-        server.getScheduler().scheduleDelayedTask(this, task, delay);
+        server.getScheduler().scheduleDelayedTask(getContainer(), task, delay);
     }
 
     @Override

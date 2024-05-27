@@ -18,7 +18,7 @@ public class FetchPlayerListMessage implements AbstractMessage {
         Map<UUID, String> players = plugin.getOnlinePlayers();
 
         JsonArray array = new JsonArray();
-        players.forEach(this::buildPlayerObject);
+        players.forEach((uuid ,name) -> array.add(buildPlayerObject(uuid, name)));
 
         JsonObject object = new JsonObject();
         object.add("players", array);
