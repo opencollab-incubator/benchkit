@@ -51,7 +51,7 @@ class Config {
     }
 
     get fetchPlayerList(): boolean {
-        return this.config.fetchPlayerList || true;
+        return this.config.fetchPlayerList;
     }
 
     set fetchPlayerList(value: boolean) {
