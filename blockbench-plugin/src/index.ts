@@ -8,18 +8,15 @@ import { createConnectDialog } from "./screens/connect/dialog";
 import { createExportDialog, createExportModelDialog } from "./screens/export/dialog";
 
 (function () {
-    // Workaround for the Plugin class conflicting with the dom types
-    // @ts-ignore
-    Plugin.register("benchkit", {
+    BBPlugin.register("benchkit", {
         title: "Benchkit",
         author: "lukeeey",
         description: "A Blockbench plugin used in conjunction with a server plugin to assist with testing skins and models",
         version: "1.0.0",
+        icon: "", // TODO: Create an icon
         variant: "both",
         onload() {
-            // Load CSS styles
             loadStyles();
-
             initMenuItems();
             initKeybinds();
         }
@@ -60,7 +57,6 @@ function initMenuItems() {
             }
         }),
         "",
-        // TODO: Merge these in the future if possible
         new Action("applySkinOnServer", {
             name: "Apply Skin on Server",
             icon: "",
@@ -105,7 +101,6 @@ export function updatePlayerList() {
     playerListInterval = window.setInterval(fetchPlayerList, 10 * 1000);
 }
 
-// @ts-ignore
 Blockbench.on("benchkit_prefs_updated", (data: any) => {
     if (data.fetch_player_list && globals.playerList.length === 0) {
         updatePlayerList()

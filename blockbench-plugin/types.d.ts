@@ -3,7 +3,7 @@
 /**
  * This allows us to import html files without typescript complaining.
  */
-declare module '*.html' {
+declare module "*.html" {
     const content: string;
     export default content;
 }
@@ -11,7 +11,7 @@ declare module '*.html' {
 /**
  * This allows us to import css files without typescript complaining.
  */
-declare module '*.css' {
+declare module "*.css" {
     const content: string;
     export default content;
 }
