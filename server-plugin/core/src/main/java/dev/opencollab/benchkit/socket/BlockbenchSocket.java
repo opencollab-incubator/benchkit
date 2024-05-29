@@ -10,6 +10,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * The socket connection between the server and the Blockbench plugin.
@@ -25,9 +27,9 @@ public class BlockbenchSocket extends WebSocketServer {
 
     public void sendToSocket(WebSocket socket, String type, JsonObject data) {
         JsonObject object = new JsonObject();
-        
+
         object.addProperty("type", type);
-        object.addProperty("key", plugin.getAuthenticationKey());
+        object.addProperty("key", createSHA256Hash(plugin.getAuthenticationKey()));
 
         if (data != null) {
             object.add("data", data);
@@ -58,8 +60,9 @@ public class BlockbenchSocket extends WebSocketServer {
 
         if (type.equalsIgnoreCase("authenticate")) {
             String key = object.get("key").getAsString();
+            String serverKey = createSHA256Hash(plugin.getAuthenticationKey());
 
-            if (key.equalsIgnoreCase(plugin.getAuthenticationKey())) {
+            if (key.equalsIgnoreCase(serverKey)) {
                 sendToSocket(socket, "authenticate", null);
                 authenticatedSockets.add(socketHash);
 
@@ -87,5 +90,25 @@ public class BlockbenchSocket extends WebSocketServer {
     @Override
     public void onStart() {
         plugin.logInfo("Socket server started!");
+    }
+
+    private String createSHA256Hash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes());
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append("0");
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            plugin.logError("Failed to create SHA-256 hash: " + ex.getMessage());
+            return null;
+        }
     }
 }

@@ -5,7 +5,6 @@ import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public interface BenchkitPlugin {
 
@@ -30,7 +29,7 @@ public interface BenchkitPlugin {
      * @param playerUuid the players uuid
      * @param image the skin texture
      */
-    void applySkin(UUID playerUuid, BufferedImage image);
+    void applySkin(UUID playerUuisd, BufferedImage image);
 
     /**
      * Apply a skin to the given player as well as the given model.

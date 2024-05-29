@@ -6,6 +6,7 @@ import { loadStyles } from "./screens/style-registry";
 import { createConfigureDialog } from "./screens/configure/dialog";
 import { createConnectDialog } from "./screens/connect/dialog";
 import { createExportDialog, createExportModelDialog } from "./screens/export/dialog";
+import { playerListInterval, updatePlayerList } from "./utils";
 
 (function () {
     BBPlugin.register("benchkit", {
@@ -85,20 +86,6 @@ function initMenuItems() {
 
 function initKeybinds() {
 
-}
-
-let playerListInterval: number;
-
-export function updatePlayerList() {
-    let fetchPlayerList = function () {
-        if (!config.fetchPlayerList) {
-            globals.playerList = [];
-            return window.clearInterval(playerListInterval);
-        }
-        socket.send("fetch_player_list", {});
-    }
-    fetchPlayerList()
-    playerListInterval = window.setInterval(fetchPlayerList, 10 * 1000);
 }
 
 Blockbench.on("benchkit_prefs_updated", (data: any) => {

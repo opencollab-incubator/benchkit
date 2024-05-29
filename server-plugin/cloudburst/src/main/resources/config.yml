@@ -1,6 +1,6 @@
 # ---------------------------------------
 # Benchkit Config
-# https://github.com/lukeeey/benchkit
+# https://github.com/opencollab-incubator/benchkit
 # ---------------------------------------
 
 # The address for the socket server to listen on.

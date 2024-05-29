@@ -1,6 +1,6 @@
 import config from "./config";
 import globals from "./globals";
-import { updatePlayerList } from "./index";
+import { createSHA256Hash, updatePlayerList } from "./utils";
 
 class BenchkitSocket {
     private socket?: WebSocket;
@@ -15,8 +15,8 @@ class BenchkitSocket {
             }
             this.socket = new WebSocket(`ws://${address}:${port}`);
 
-            this.socket.onopen = (event) => {
-                this.key = key;
+            this.socket.onopen = async (event) => {
+                this.key = await createSHA256Hash(key);
                 this.address = address;
                 this.port = port;
                 this.onOpen(event);
