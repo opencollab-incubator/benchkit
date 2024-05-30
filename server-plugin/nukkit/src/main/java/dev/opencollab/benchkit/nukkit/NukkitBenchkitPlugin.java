@@ -15,7 +15,6 @@ public class NukkitBenchkitPlugin extends PluginBase {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        saveResource("geometry.json");
 
         address = new InetSocketAddress(getConfig().getString("address"), getConfig().getInt("port"));
 

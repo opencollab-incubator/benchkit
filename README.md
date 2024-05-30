@@ -1,5 +1,5 @@
 # Benchkit
-A Blockbench plugin and a Minecraft server plugin to facilitate with testing Minecraft: Bedrock Edition skins.
+A Blockbench plugin and a Minecraft server plugin to facilitate with testing Minecraft: Bedrock Edition skins and entity models.
 
 ![Benchkit](https://github.com/opencollab-incubator/benchkit/workflows/Benchkit/badge.svg)
 [![Discord](https://img.shields.io/discord/803794932820082739.svg?color=%237289da&label=Discord)](https://discord.gg/wS7ZpJcMtZ)
@@ -13,10 +13,3 @@ This process will become simpler as the plugins become more developed.
 4. Click the `Benchkit` menu at the top of the screen and select `Connect to Minecraft Server` and enter the details (keybind coming soon) 
 5. Once connected, go about editng your skin and then click `Apply Skin on Server` in the `Benchkit` menu (next time you want to apply the skin to the same player just hit `CTRL+SHIFT+L`)
 6. Done! Your skin will change in game instantly
-
-## Planned Features
-* "Groups" support
-  * Will be able to sort players into groups either by selecting multiple UUIDs or based on custom criteria (**maybe**)
-* Apply a skin or model and have the option to apply the other one at the same time
-  * **Example:** You go to apply a skin and in the dialog it gives you an option to choose from one of your previously saved models
-  * This feature is just intended to save time

@@ -13,7 +13,6 @@ export function createExportDialog() {
         onConfirm: (formData: any) => {
             socket.send("apply_skin", {
                 entityUuid: formData.entityUuid,
-                // @ts-ignore
                 texture: Project.textures[0].img.src
             });
             config.lastPlayerUuid = formData.entityUuid;
@@ -54,7 +53,8 @@ export function createExportModelDialog() {
                 entityUuid: formData.entityUuid,
                 // @ts-ignore
                 identifier: Project.geometry_name,
-                model: Codecs.bedrock.compile()
+                model: Codecs.bedrock.compile(),
+                texture: Project.textures[0].img.src
             })
             // @ts-ignore
             config.lastPlayerUuid = formData.entityUuid;
