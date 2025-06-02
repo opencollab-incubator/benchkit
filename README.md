@@ -2,7 +2,6 @@
 A Blockbench plugin and a Minecraft server plugin to facilitate with testing Minecraft: Bedrock Edition skins and entity models.
 
 ![Benchkit](https://github.com/opencollab-incubator/benchkit/workflows/Benchkit/badge.svg)
-[![Discord](https://img.shields.io/discord/803794932820082739.svg?color=%237289da&label=Discord)](https://discord.gg/wS7ZpJcMtZ)
 
 ## Usage
 This process will become simpler as the plugins become more developed.

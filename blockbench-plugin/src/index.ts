@@ -11,8 +11,8 @@ import { playerListInterval, updatePlayerList } from "./utils";
 (function () {
     BBPlugin.register("benchkit", {
         title: "Benchkit",
-        author: "lukeeey",
-        description: "A Blockbench plugin used in conjunction with a server plugin to assist with testing skins and models",
+        author: "Open Collaboration",
+        description: "A Blockbench plugin used in conjunction with a Minecraft server plugin to assist with testing skins and models",
         version: "1.0.0",
         icon: "", // TODO: Create an icon
         variant: "both",
