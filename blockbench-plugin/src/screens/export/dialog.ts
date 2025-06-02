@@ -22,16 +22,15 @@ export function createExportDialog() {
     });
     
     if (config.fetchPlayerList) {
-        var options = {}
+        var options = {};
 
         for (var player of globals.playerList) {
             options[player.uuid] = player.name + " (" + player.uuid + ")"
         }
 
-        // @ts-ignore
         dialog.form = {
             entityUuid: { label: "Select player", type: "select", options: options }
-        }
+        } as any;
     }
     
     dialog.show();
@@ -70,10 +69,9 @@ export function createExportModelDialog() {
             options[player.uuid] = player.name + " (" + player.uuid + ")"
         }
 
-        // @ts-ignore
         dialog.form = {
             entityUuid: { label: "Select player", type: "select", options: options }
-        }
+        } as any;
     }
 
     dialog.show()
