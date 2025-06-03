@@ -1,0 +1,6 @@
+id: benchkit-geyser
+name: Benchkit
+main: dev.opencollab.benchkit.geyser.GeyserBenchkitExtension
+api: 2.6.1
+version: 1.0.0
+authors: Open Collaboration

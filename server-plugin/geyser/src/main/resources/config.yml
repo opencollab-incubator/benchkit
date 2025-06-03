@@ -1,0 +1,17 @@
+# ---------------------------------------
+# Benchkit Config
+# https://github.com/opencollab-incubator/benchkit
+# ---------------------------------------
+
+# The address for the socket server to listen on.
+# This is the address you use in Blockbench.
+address: 0.0.0.0
+port: 3000
+
+# A password to prevent unauthorized connections to the socket server, thus allowing
+# anyone to change the skin of any player.
+key: "CHANGEME"
+
+# The amount of time, in seconds, that the Blockbench client has to authenticate with
+# the correct key before the connection is closed.
+authenticationTimeout: 5

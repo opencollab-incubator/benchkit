@@ -13,6 +13,7 @@
         <module>core</module>
         <module>cloudburst</module>
         <module>nukkit</module>
+        <module>geyser</module>
     </modules>
 
     <properties>
@@ -29,6 +30,10 @@
         <repository>
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots</url>
+        </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
